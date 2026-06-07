@@ -1,0 +1,58 @@
+{
+  "name": "main protection",
+  "target": "branch",
+  "source_type": "Repository",
+  "source": "Kendrick-Oppong/shelf-ui",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": ["refs/heads/main"],
+      "exclude": []
+    }
+  },
+  "rules": [
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          {
+            "context": "ci"
+          },
+          {
+            "context": "quality"
+          }
+        ]
+      }
+    },
+    {
+      "type": "required_linear_history"
+    },
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": true,
+        "allowed_merge_methods": ["squash", "rebase"]
+      }
+    },
+    {
+      "type": "commit_message_pattern",
+      "parameters": {
+        "operator": "regex",
+        "pattern": "^(feat|fix|docs|style|refactor|test|chore|perf|ci|revert|build)(\\(.+\\))?!?: .{1,72}"
+      }
+    }
+  ],
+  "bypass_actors": [],
+  "notes": "Main branch protection rules for shelf-ui"
+}

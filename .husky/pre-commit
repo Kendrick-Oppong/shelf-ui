@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run lint-staged only — avoid running `pnpm test` which may not be defined locally
+pnpm dlx lint-staged

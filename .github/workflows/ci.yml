@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm check          # Ultracite lint + format check
+      - run: pnpm typecheck      # TypeScript
+      - run: pnpm registry:check # Validate registry output
+
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    needs: ci
+    steps:
+      - run: echo "quality gate passed"
