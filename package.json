@@ -33,6 +33,7 @@
       "pnpm dlx ultracite fix"
     ]
   },
+  "license": "MIT",
   "name": "shelf-ui",
   "scripts": {
     "dev": "next dev",
