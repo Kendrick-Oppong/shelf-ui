@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AdaptersSection } from "@/components/home/adapters-section";
 import { CtaSection } from "@/components/home/cta-section";
 import { FeaturesBento } from "@/components/home/features-bento";
+import { FlowDiagram } from "@/components/home/flow-diagram";
 import { HeroSection } from "@/components/home/hero-section";
 import { PrimitivesSection } from "@/components/home/primitives-section";
 import { StatsSection } from "@/components/home/stats-section";
@@ -20,6 +21,7 @@ export default function HomePage() {
       <Header />
       <main>
         <HeroSection />
+        <FlowDiagram />
         <StatsSection />
         <FeaturesBento />
         <AdaptersSection />
