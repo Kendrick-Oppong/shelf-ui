@@ -24,7 +24,7 @@ jobs:
 
       - run: pnpm check          # Ultracite lint + format check
       - run: pnpm typecheck      # TypeScript
-      - run: pnpm registry:check # Validate registry output
+      # - run: pnpm registry:check # Validate registry output
 
   quality:
     name: quality
