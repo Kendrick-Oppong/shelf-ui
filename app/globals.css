@@ -25,7 +25,7 @@
   --secondary: #e4e4e7;
   --secondary-foreground: #09090b;
   --muted: #e4e4e7;
-  --muted-foreground: #71717a;
+  --muted-foreground: #747477;
   --accent: #f1f1f3;
   --accent-foreground: #09090b;
 
@@ -103,7 +103,7 @@
   --secondary: #18181f;
   --secondary-foreground: #eeedf5;
   --muted: #18181f;
-  --muted-foreground: #55546a;
+  --muted-foreground: #99999e;
   --accent: #1e1e27;
   --accent-foreground: #eeedf5;
 
@@ -249,11 +249,7 @@
   }
 
   body {
-    overflow-x: hidden;
-    font-weight: 400;
-    line-height: 1.6;
-    letter-spacing: var(--tracking-normal);
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground -tracking-normal overflow-x-hidden leading-[1.6];
   }
 
   h1,
@@ -262,8 +258,6 @@
   h4,
   h5,
   h6 {
-    line-height: 1.05;
-    letter-spacing: -0.03em;
     @apply font-bold text-foreground;
   }
 
@@ -275,21 +269,37 @@
     pointer-events: none;
     content: "";
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-    opacity: 0.25;
+    opacity: 0.6;
   }
 
-  /* Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
+
   ::-webkit-scrollbar-track {
+    border-radius: 9999px;
     @apply bg-background;
   }
+
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted rounded-full;
+    border: 1px solid hsl(var(--background)); /* prevents ugly edges */
+    @apply bg-muted rounded-full; /* prevents ugly edges */
   }
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground;
+  }
+
+  /* More aggressive targeting for horizontal scrollbars */
+  .overflow-x-auto::-webkit-scrollbar,
+  .overflow-x-auto::-webkit-scrollbar-track,
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    height: 5px;
+  }
+
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
   }
 
   /* Selection */
@@ -302,7 +312,7 @@
    UTILITY CLASSES
 ───────────────────────────────────────── */
 @utility container-shelf {
-  @apply w-full max-w-[1100px] mx-auto px-8;
+  @apply w-full max-w-[1100px] mx-auto px-5;
 }
 
 @utility section-eyebrow {
