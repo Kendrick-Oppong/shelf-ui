@@ -1,30 +1,44 @@
 import Link from "next/link";
 
 const FOOTER_LINKS = [
-  { label: "GitHub", href: "https://github.com/Kendrick-Oppong/shelf-ui" },
-  { label: "Docs", href: "/docs" },
-  { label: "Components", href: "/docs/components" },
-  { label: "Changelog", href: "/changelog" },
-  { label: "Twitter", href: "https://twitter.com/kendrickoppong" },
+  {
+    label: "GitHub",
+    href: "https://github.com/Kendrick-Oppong/shelf-ui",
+    isExternal: true,
+  },
+  { label: "Docs", href: "/docs", isExternal: false },
+  {
+    label: "Components",
+    href: "/docs/components",
+    isExternal: false,
+  },
+  { label: "Changelog", href: "/changelog", isExternal: false },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/kendrick-oppong",
+    isExternal: true,
+  },
 ] as const;
-
 export function Footer() {
   return (
-    <footer className="border-border border-t px-8 py-10">
-      <div className="container-shelf flex flex-wrap items-center justify-between gap-4">
+    <footer className="border-border border-t px-5 py-10">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="font-light text-[12.5px] text-muted-foreground">
           Built by{" "}
-          <strong className="font-semibold text-foreground">
-            Kendrick Oppong
-          </strong>{" "}
-          · MIT License
+          <strong className="font-semibold text-primary">Kendrick</strong>
         </p>
-        <nav className="flex gap-8">
-          {FOOTER_LINKS.map(({ label, href }) => (
+        <p className="font-light text-[12.5px] text-muted-foreground">
+          &copy; {new Date().getFullYear()} ShelfUI. All rights reserved.
+        </p>
+
+        <nav className="mt-4 flex flex-wrap gap-3 sm:mt-0 sm:gap-5">
+          {FOOTER_LINKS.map(({ label, href, isExternal }) => (
             <Link
               className="text-[12.5px] text-muted-foreground transition-colors hover:text-foreground"
               href={href}
               key={label}
+              rel={isExternal ? "noopener noreferrer" : undefined}
+              target={isExternal ? "_blank" : undefined}
             >
               {label}
             </Link>
