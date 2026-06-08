@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Bai_Jamjuree, Courier_Prime } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/lib/providers/theme-provider";
 import "./globals.css";
 
 const fontSans = Bai_Jamjuree({
