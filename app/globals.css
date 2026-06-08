@@ -283,7 +283,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    border: 1px solid hsl(var(--background)); /* prevents ugly edges */
+    border: 1px solid var(--background); /* prevents ugly edges */
     @apply bg-muted rounded-full; /* prevents ugly edges */
   }
 

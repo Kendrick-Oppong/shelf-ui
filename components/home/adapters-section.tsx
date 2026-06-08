@@ -129,7 +129,7 @@ export function AdaptersSection() {
         {/* Bottom note */}
         <p className="mt-8 text-center font-light text-[12.5px] text-muted-foreground">
           More adapters coming —{" "}
-          <span className="cursor-pointer text-primary underline-offset-2 hover:underline">
+          <span className="text-primary">
             Firebase Storage, Azure Blob, ImageKit, Uploadthing
           </span>
         </p>
