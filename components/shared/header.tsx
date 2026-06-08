@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ModeToggle } from "@/components/mode-toggle";
+import { ModeToggle } from "@/components/shared/mode-toggle";
 
 const NAV_LINKS = [
   { label: "Docs", href: "/docs" },
