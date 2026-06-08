@@ -1,10 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HeroPreview } from "./hero-preview";
 
 const fadeUp = (delay: number) => ({
   initial: false,
@@ -38,20 +37,18 @@ function BadgePulse() {
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-8 pt-32 pb-24 text-center">
+    <section className="relative flex flex-col items-center justify-center overflow-hidden px-5 pt-28 pb-20 text-center">
       {/* Radial glow */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-[30%] left-1/2 h-125 w-225 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse,color-mix(in_srgb,var(--color-primary)_9%,transparent)_0%,transparent_65%)]"
+        className="pointer-events-none absolute top-1/3 left-1/2 h-[600px] w-[1000px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse,color-mix(in_srgb,var(--color-primary)_7%,transparent)_0%,transparent_60%)]"
       />
-
-      {/* Grid lines */}
+      {/* Grid */}
       <div
         aria-hidden
-        className="mask-[radial-gradient(ellipse_80%_60%_at_50%_0%,black_0%,transparent_100%)] pointer-events-none absolute inset-0 bg-[linear-gradient(color-mix(in_srgb,var(--color-foreground)_2.5%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--color-foreground)_2.5%,transparent)_1px,transparent_1px)] bg-size-[60px_60px]"
+        className="mask-[radial-gradient(ellipse_70%_50%_at_50%_0%,black_0%,transparent_100%)] pointer-events-none absolute inset-0 bg-[linear-gradient(color-mix(in_srgb,var(--color-foreground)_3%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--color-foreground)_2%,transparent)_1px,transparent_1px)] bg-size-[72px_72px]"
       />
 
-      {/* Content */}
       <div className="relative z-10 flex flex-col items-center">
         <motion.div {...fadeUp(0)}>
           <Badge
@@ -59,13 +56,13 @@ export function HeroSection() {
             variant="outline"
           >
             <BadgePulse />
-            Shadcn Registry · Open Source · MIT
+            Shadcn Registry · Open Source
           </Badge>
         </motion.div>
 
         <motion.h1
-          {...fadeUp(0.1)}
-          className="mt-8 mb-7 max-w-225 font-bold text-[clamp(3rem,7vw,5.8rem)] leading-[1.02] tracking-[-0.04em]"
+          {...fadeUp(0.08)}
+          className="mt-8 mb-6 max-w-[860px] font-bold text-[clamp(3.2rem,7.5vw,6.2rem)] leading-none tracking-[-0.045em]"
         >
           Every file UI component
           <br />
@@ -76,52 +73,31 @@ export function HeroSection() {
         </motion.h1>
 
         <motion.p
-          {...fadeUp(0.2)}
-          className="mb-12 max-w-130 font-light text-[1.05rem] text-muted-foreground leading-[1.8]"
+          {...fadeUp(0.16)}
+          className="mb-10 max-w-[480px] text-balance font-medium text-[1.05rem] text-muted-foreground leading-[1.85]"
         >
-          Copy-paste components for the complete file experience. Upload,
-          preview, manage, navigate — with first-class Supabase, S3 and
-          Cloudinary support. Zero config.
+          Copy-paste components for the complete file experience — upload,
+          preview, manage, navigate. First-class Supabase, S3 and Cloudinary
+          support. Zero config.
         </motion.p>
 
         <motion.div
-          {...fadeUp(0.3)}
-          className="mb-6 flex flex-wrap items-center justify-center gap-3"
+          {...fadeUp(0.22)}
+          className="flex flex-wrap items-center justify-center gap-3"
         >
           <Button
             asChild
-            className="h-auto rounded-xl px-7 py-3 text-sm hover:-translate-y-0.5 hover:shadow-[0_8px_30px_color-mix(in_srgb,var(--color-primary)_25%,transparent)] hover:brightness-110"
+            className="h-auto flex-1 rounded-xl px-7 py-3 text-sm hover:-translate-y-0.5 hover:shadow-[0_8px_30px_color-mix(in_srgb,var(--color-primary)_25%,transparent)] hover:brightness-110"
           >
             <Link href="/docs">Get Started</Link>
           </Button>
           <Button
             asChild
-            className="h-auto rounded-xl px-7 py-3 text-sm hover:-translate-y-0.5"
+            className="h-auto flex-1 rounded-xl border border-foreground/20! px-7 py-3 text-sm hover:-translate-y-0.5"
             variant="outline"
           >
             <Link href="/docs/components">Browse Components</Link>
           </Button>
-        </motion.div>
-
-        <motion.div
-          {...fadeUp(0.4)}
-          className="inline-flex items-center gap-2.5 rounded-[10px] border border-border bg-secondary px-4 py-2.5 text-[12.5px] text-muted-foreground"
-        >
-          <span className="text-[11px] text-muted-foreground/60">▸</span>
-          <code className="font-mono text-[12px] text-primary tracking-[0.02em]">
-            npx shadcn@latest add @shelf-ui/dropzone
-          </code>
-          <span className="text-border-strong text-xs">·</span>
-          <span className="cursor-pointer text-[11px] transition-colors hover:text-foreground">
-            Copy
-          </span>
-        </motion.div>
-
-        <motion.div
-          {...fadeUp(0.5)}
-          className="mt-20 flex w-full max-w-7xl justify-center"
-        >
-          <HeroPreview />
         </motion.div>
       </div>
     </section>
