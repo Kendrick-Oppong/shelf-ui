@@ -5,29 +5,29 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ─────────────────────────────────────────
-   LIGHT MODE  (warm paper + amber brand)
+   LIGHT MODE  (clean white + amber brand)
 ───────────────────────────────────────── */
 :root {
   /* Core surfaces */
-  --background: #f5f3ef;
-  --foreground: #111010;
-  --card: #faf8f4;
-  --card-foreground: #111010;
-  --card-hover: #f0ece4;
-  --popover: #faf8f4;
-  --popover-foreground: #111010;
+  --background: #f4f4f5;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --card-hover: #f8f8f9;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
 
-  /* Brand */
-  --primary: #c48c0f;
-  --primary-foreground: #faf8f4;
+  /* Brand — darker amber for AA contrast on white */
+  --primary: #b45309;
+  --primary-foreground: #ffffff;
 
   /* Surfaces */
-  --secondary: #e8e4da;
-  --secondary-foreground: #111010;
-  --muted: #ddd9ce;
-  --muted-foreground: #706a5e;
-  --accent: #e0dbd1;
-  --accent-foreground: #111010;
+  --secondary: #e4e4e7;
+  --secondary-foreground: #09090b;
+  --muted: #e4e4e7;
+  --muted-foreground: #71717a;
+  --accent: #f1f1f3;
+  --accent-foreground: #09090b;
 
   /* Semantic */
   --destructive: #dc2626;
@@ -35,45 +35,48 @@
   --success: #16a34a;
 
   /* Borders */
-  --border: #d8d3c8;
-  --border-strong: #b8b2a5;
-  --input: #d8d3c8;
-  --ring: #c48c0f;
+  --border: #d4d4d8;
+  --border-strong: #a1a1aa;
+  --input: #d4d4d8;
+  --ring: #b45309;
 
   /* Charts */
-  --chart-1: #c48c0f;
-  --chart-2: #111010;
-  --chart-3: #706a5e;
-  --chart-4: #a89f8f;
-  --chart-5: #ddd9ce;
+  --chart-1: #b45309;
+  --chart-2: #09090b;
+  --chart-3: #71717a;
+  --chart-4: #a1a1aa;
+  --chart-5: #e4e4e7;
 
   /* Sidebar */
-  --sidebar: #ede9e1;
-  --sidebar-foreground: #111010;
-  --sidebar-primary: #c48c0f;
-  --sidebar-primary-foreground: #faf8f4;
-  --sidebar-accent: #e8e4da;
-  --sidebar-accent-foreground: #111010;
-  --sidebar-border: #d8d3c8;
-  --sidebar-ring: #c48c0f;
+  --sidebar: #f4f4f5;
+  --sidebar-foreground: #09090b;
+  --sidebar-primary: #b45309;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e4e4e7;
+  --sidebar-accent-foreground: #09090b;
+  --sidebar-border: #d4d4d8;
+  --sidebar-ring: #b45309;
 
   /* Shape & spacing */
   --radius: 0.625rem;
 
-  /* Shadows */
-  --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.04);
-  --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.05);
+  /* Shadows — more visible on white cards */
+  --shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.06);
+  --shadow-xs: 0px 2px 4px 0px hsl(0 0% 0% / 0.08);
   --shadow-sm:
-    0px 2px 6px 0px hsl(0 0% 0% / 0.07), 0px 1px 2px -1px hsl(0 0% 0% / 0.05);
+    0px 2px 6px 0px hsl(0 0% 0% / 0.09), 0px 1px 2px -1px hsl(0 0% 0% / 0.06);
   --shadow:
-    0px 4px 10px 0px hsl(0 0% 0% / 0.08), 0px 1px 3px -1px hsl(0 0% 0% / 0.06);
+    0px 4px 10px 0px hsl(0 0% 0% / 0.1), 0px 1px 3px -1px hsl(0 0% 0% / 0.08);
   --shadow-md:
-    0px 4px 12px 0px hsl(0 0% 0% / 0.1), 0px 2px 4px -1px hsl(0 0% 0% / 0.07);
+    0px 4px 12px 0px hsl(0 0% 0% / 0.12), 0px 2px 4px -1px hsl(0 0% 0% / 0.08);
   --shadow-lg:
-    0px 8px 20px 0px hsl(0 0% 0% / 0.1), 0px 4px 6px -1px hsl(0 0% 0% / 0.07);
+    0px 8px 20px 0px hsl(0 0% 0% / 0.12), 0px 4px 6px -1px hsl(0 0% 0% / 0.08);
   --shadow-xl:
-    0px 12px 30px 0px hsl(0 0% 0% / 0.1), 0px 8px 10px -1px hsl(0 0% 0% / 0.07);
-  --shadow-2xl: 0px 20px 40px 0px hsl(0 0% 0% / 0.15);
+    0px 12px 30px 0px hsl(0 0% 0% / 0.12), 0px 8px 10px -1px hsl(0 0% 0% / 0.08);
+  --shadow-2xl: 0px 20px 40px 0px hsl(0 0% 0% / 0.18);
+
+  /* Hero stroke — stronger in light mode so it reads on white */
+  --hero-stroke: var(--primary);
 
   /* Typography */
   --tracking-normal: 0.01em;
@@ -149,6 +152,9 @@
   --shadow-xl:
     0px 18px 40px 0px hsl(0 0% 0% / 0.55), 0px 8px 12px -1px hsl(0 0% 0% / 0.45);
   --shadow-2xl: 0px 30px 60px 0px hsl(0 0% 0% / 0.75);
+
+  /* Hero stroke — softer in dark mode */
+  --hero-stroke: color-mix(in srgb, var(--primary) 45%, transparent);
 
   /* Typography */
   --tracking-normal: 0.01em;

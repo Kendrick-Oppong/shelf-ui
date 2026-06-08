@@ -69,7 +69,7 @@ export function HeroSection() {
         >
           Every file UI component
           <br />
-          <span className="text-transparent [-webkit-text-stroke:1px_color-mix(in_srgb,var(--color-primary)_45%,transparent)]">
+          <span className="text-transparent [&]:[-webkit-text-stroke:1.5px_var(--hero-stroke)]">
             {"your app will ever "}
           </span>
           <span className="text-primary">need.</span>
