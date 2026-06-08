@@ -23,7 +23,7 @@ export function Reveal({
     <motion.div
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
       className={className}
-      initial={{ opacity: 0, y: 28 }}
+      initial={false}
       ref={ref}
       transition={{
         duration: 0.75,
