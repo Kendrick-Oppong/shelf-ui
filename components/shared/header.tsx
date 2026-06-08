@@ -94,6 +94,8 @@ export function Header() {
 
             {/* Hamburger — mobile only */}
             <button
+              aria-controls="mobile-nav"
+              aria-expanded={open}
               aria-label={open ? "Close menu" : "Open menu"}
               className="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground md:hidden"
               onClick={() => setOpen((value) => !value)}
@@ -148,6 +150,7 @@ export function Header() {
             animate={{ opacity: 1 }}
             className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-background pt-15 md:hidden"
             exit={{ opacity: 0 }}
+            id="mobile-nav"
             initial={{ opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >

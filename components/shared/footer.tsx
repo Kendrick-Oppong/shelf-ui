@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const FOOTER_LINKS = [
   {
@@ -20,6 +23,12 @@ const FOOTER_LINKS = [
   },
 ] as const;
 export function Footer() {
+  const [year, setYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="border-border border-t px-5 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -28,7 +37,7 @@ export function Footer() {
           <strong className="font-semibold text-primary">Kendrick</strong>
         </p>
         <p className="font-light text-[12.5px] text-muted-foreground">
-          &copy; {new Date().getFullYear()} ShelfUI. All rights reserved.
+          &copy; {year} ShelfUI. All rights reserved.
         </p>
 
         <nav className="mt-4 flex flex-wrap gap-3 sm:mt-0 sm:gap-5">
