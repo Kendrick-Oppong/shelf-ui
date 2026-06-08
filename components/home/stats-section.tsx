@@ -11,11 +11,12 @@ const STATS = [
 export function StatsSection() {
   return (
     <Reveal>
-      <div className="border-border border-y bg-card">
-        <div className="container-shelf flex items-center justify-center">
-          {STATS.map(({ value, suffix, label }) => (
+      <div className="overflow-hidden border border-border bg-card">
+        <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-5">
+          {STATS.map(({ value, suffix, label }, index) => (
             <div
-              className="flex flex-1 flex-col items-center border-border not-last:border-r px-14 py-8"
+              className={`flex flex-col items-center justify-center p-6 ${index === STATS.length - 1 ? "col-span-2 sm:col-span-1" : ""}
+              `}
               key={label}
             >
               <p className="font-bold text-[2.2rem] text-foreground tracking-[-0.04em]">
