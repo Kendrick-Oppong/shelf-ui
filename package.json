@@ -26,8 +26,8 @@
     "lefthook": "^2.1.9",
     "lint-staged": "^17.0.7",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "ultracite": "7.8.1"
+    "typescript": "^6",
+    "ultracite": "7.8.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
