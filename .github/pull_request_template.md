@@ -22,7 +22,7 @@ Please include a brief summary of the change and the motivation behind it.
 - [ ] Local dev server verified
 - [ ] `pnpm check` passes
 - [ ] `pnpm typecheck` passes
-- [ ] `pnpm registry:build` and `pnpm registry:check` pass
+<!-- - [ ] `pnpm registry:build` and `pnpm registry:check` pass -->
 - [ ] Existing examples still work
 - [ ] Visual/manual review completed
 
