@@ -1,4 +1,5 @@
 import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
+import { File, Files, Folder } from "fumadocs-ui/components/files";
 // biome-ignore lint/performance/noNamespaceImport: <explanation>
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -15,6 +16,20 @@ export function getMDXComponents(components?: MDXComponents) {
       </CodeBlock>
     ),
     Badge,
+    FileTree: Files,
+    FileTreeItem: ({
+      icon,
+      ...props
+    }: {
+      icon?: string;
+      name: string;
+      children?: React.ReactNode;
+    }) => {
+      if (icon === "folder") {
+        return <Folder {...props} />;
+      }
+      return <File {...props} />;
+    },
     ...TabsComponents,
     ...components,
   } satisfies MDXComponents;
