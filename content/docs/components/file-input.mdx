@@ -1,0 +1,41 @@
+---
+title: FileInput
+description: A traditional file input component with enhanced styling and accessibility.
+icon: File
+---
+
+import { Badge } from "@/components/ui/badge"
+
+<div className="flex gap-2 mb-6">
+  <Badge variant="outline">Radix UI</Badge>
+  <Badge variant="outline">Accessible</Badge>
+</div>
+
+## Introduction
+
+The FileInput component provides a styled alternative to the native file input, maintaining full accessibility while offering better visual customization.
+
+## Installation
+
+```bash
+pnpm dlx shadcn@latest add @shelf-ui/file-input
+```
+
+## Usage
+
+```tsx
+import { FileInput } from "@/components/ui/file-input"
+
+export function Example() {
+  return (
+    <FileInput
+      onChange={(files) => console.log(files)}
+      placeholder="Choose files..."
+    />
+  )
+}
+```
+
+<Callout type="info" title="Coming Soon">
+  Full documentation for this component is being written.
+</Callout>

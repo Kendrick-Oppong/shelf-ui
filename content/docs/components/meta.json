@@ -1,0 +1,6 @@
+{
+  "title": "Components",
+  "root": true,
+  "description": "Browse all available Shelf UI components",
+  "pages": ["dropzone", "file-input", "file-card"]
+}

@@ -1,0 +1,45 @@
+---
+title: FileCard
+description: Display file information in a card layout with preview thumbnails.
+icon: FileText
+---
+
+import { Badge } from "@/components/ui/badge"
+
+<div className="flex gap-2 mb-6">
+  <Badge variant="outline">Display</Badge>
+  <Badge variant="outline">Preview</Badge>
+</div>
+
+## Introduction
+
+The FileCard component displays uploaded or selected files in an attractive card format with thumbnails, metadata, and action buttons.
+
+## Installation
+
+```bash
+pnpm dlx shadcn@latest add @shelf-ui/file-card
+```
+
+## Usage
+
+```tsx
+import { FileCard } from "@/components/ui/file-card"
+
+export function Example() {
+  return (
+    <FileCard
+      file={{
+        name: "document.pdf",
+        size: 1024000,
+        type: "application/pdf"
+      }}
+      onRemove={() => console.log('removed')}
+    />
+  )
+}
+```
+
+<Callout type="info" title="Coming Soon">
+  Full documentation for this component is being written.
+</Callout>

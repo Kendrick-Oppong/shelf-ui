@@ -1,0 +1,134 @@
+---
+title: Dropzone
+description: A drag and drop file upload area with multi-file support, accept type filtering, and full keyboard accessibility.
+icon: Upload
+---
+
+import { Badge } from "@/components/ui/badge"
+
+<div className="flex gap-2 mb-6">
+  <Badge variant="outline">Radix UI</Badge>
+  <Badge variant="outline">Base UI</Badge>
+  <Badge variant="outline">Accessible</Badge>
+</div>
+
+## Introduction
+
+The Dropzone component provides an intuitive drag-and-drop interface for file uploads. It supports multiple files, file type filtering, size limits, and provides comprehensive accessibility features.
+
+<Callout type="info" title="New Component">
+  This component was recently added with enhanced accessibility features and better mobile support.
+</Callout>
+
+## Installation
+
+```bash
+pnpm dlx shadcn@latest add @shelf-ui/dropzone
+```
+
+## Usage
+
+### Basic Example
+
+```tsx
+import { Dropzone } from "@/components/ui/dropzone"
+
+export function BasicDropzone() {
+  const handleDrop = (files: File[]) => {
+    console.log('Dropped files:', files)
+  }
+
+  return (
+    <Dropzone onDrop={handleDrop}>
+      <div className="text-center">
+        <p>Drop files here or click to browse</p>
+        <p className="text-sm text-muted-foreground">Max 10MB per file</p>
+      </div>
+    </Dropzone>
+  )
+}
+```
+
+### With File Type Filtering
+
+```tsx
+<Dropzone
+  accept={["image/*", ".pdf"]}
+  onDrop={handleDrop}
+>
+  <div className="text-center">
+    <p>Upload images or PDFs</p>
+    <div className="flex gap-2 justify-center mt-2">
+      <Badge>PNG</Badge>
+      <Badge>JPG</Badge>
+      <Badge>PDF</Badge>
+    </div>
+  </div>
+</Dropzone>
+```
+
+### With Size Limits
+
+```tsx
+<Dropzone
+  maxSize={10 * 1024 * 1024} // 10MB
+  onDrop={handleDrop}
+  onError={(error) => console.error(error)}
+>
+  Drop files here (max 10MB)
+</Dropzone>
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onDrop` | `(files: File[]) => void` | required | Callback fired when files are dropped or selected |
+| `accept` | `string[]` | `undefined` | Array of accepted MIME types or file extensions |
+| `maxSize` | `number` | `undefined` | Maximum file size in bytes |
+| `multiple` | `boolean` | `true` | Allow multiple files to be selected |
+| `disabled` | `boolean` | `false` | Disables the dropzone |
+
+## Accessibility
+
+The Dropzone component follows WAI-ARIA best practices:
+
+- **Keyboard Navigation** — Press `Enter` or `Space` to open file picker
+- **Screen Readers** — Announces dropzone state and instructions
+- **Focus Management** — Clear focus indicators
+- **ARIA Labels** — Proper labeling for assistive technologies
+
+<Callout type="success" title="WCAG 2.1 AA Compliant">
+  This component meets WCAG 2.1 Level AA standards for accessibility.
+</Callout>
+
+## Examples
+
+### With Supabase Storage
+
+```tsx
+import { Dropzone } from "@/components/ui/dropzone"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(url, key)
+
+export function SupabaseDropzone() {
+  const handleDrop = async (files: File[]) => {
+    for (const file of files) {
+      const { data, error } = await supabase.storage
+        .from('uploads')
+        .upload(file.name, file)
+      
+      if (error) console.error(error)
+    }
+  }
+
+  return <Dropzone onDrop={handleDrop} />
+}
+```
+
+## Related
+
+- [FileInput](/docs/components/file-input) — Traditional file input component
+- [AvatarUpload](/docs/components/avatar-upload) — Specialized avatar uploader
+- [UploadProgress](/docs/components/upload-progress) — Show upload progress

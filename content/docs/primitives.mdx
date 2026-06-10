@@ -1,0 +1,91 @@
+---
+title: Primitives
+description: Understanding the building blocks of Shelf UI components.
+---
+
+## What are Primitives?
+
+Shelf UI is built on top of unstyled, accessible component primitives from **Radix UI** and **Base UI**. These primitives provide:
+
+- **Accessibility** — ARIA attributes, keyboard navigation, focus management
+- **Behavior** — Component logic without styling opinions
+- **Flexibility** — Full control over styling and structure
+
+## Why Primitives?
+
+Using primitives allows us to:
+
+1. **Maintain Accessibility** — Built-in WCAG compliance
+2. **Stay Flexible** — Style components however you want
+3. **Reduce Bundle Size** — Only import what you need
+4. **Ensure Quality** — Battle-tested by thousands of developers
+
+## Primitive Libraries
+
+### Radix UI
+
+Used for most interactive components:
+
+- Dropzone (via `@radix-ui/react-slot`)
+- Dropdown menus
+- Dialogs and modals
+- Tooltips
+
+```tsx
+import * as DropzonePrimitive from "@radix-ui/react-slot"
+```
+
+### Base UI
+
+Alternative primitive library from Material UI team:
+
+- Form controls
+- Select components
+- Tab interfaces
+
+```tsx
+import { useFileUpload } from "@/hooks/use-file-upload"
+```
+
+<Callout type="info" title="Choose Your Primitive">
+  Most Shelf UI components offer both Radix UI and Base UI implementations. Choose the one that fits your project best.
+</Callout>
+
+## Component Structure
+
+Each Shelf UI component follows this pattern:
+
+<FileTree>
+  <FileTreeItem name="components" icon="folder">
+    <FileTreeItem name="ui" icon="folder">
+      <FileTreeItem name="dropzone.tsx" icon="file" />
+    </FileTreeItem>
+  </FileTreeItem>
+  <FileTreeItem name="hooks" icon="folder">
+    <FileTreeItem name="use-file-upload.ts" icon="file" />
+  </FileTreeItem>
+  <FileTreeItem name="lib" icon="folder">
+    <FileTreeItem name="utils.ts" icon="file" />
+  </FileTreeItem>
+</FileTree>
+
+## Styling Approach
+
+We use **class-variance-authority** for variant management:
+
+```tsx
+const dropzoneVariants = cva(
+  "base-styles",
+  {
+    variants: {
+      size: {
+        sm: "h-32",
+        md: "h-48",
+        lg: "h-64",
+      }
+    }
+  }
+)
+```
+
+This provides type-safe variants with IntelliSense support.

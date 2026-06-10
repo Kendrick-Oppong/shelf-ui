@@ -1,0 +1,81 @@
+---
+title: Installation
+description: How to install and set up Shelf UI components in your project.
+---
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- Node.js 18+ installed
+- A React 18+ project (Next.js, Vite, etc.)
+- Tailwind CSS configured
+
+## Installation Methods
+
+### Using shadcn CLI (Recommended)
+
+The easiest way to add Shelf UI components:
+
+```bash
+pnpm dlx shadcn@latest add @shelf-ui/dropzone
+```
+
+This will:
+- Install the component and its dependencies
+- Add the component to your `components/ui` folder
+- Set up necessary utilities
+
+### Manual Installation
+
+If you prefer manual setup:
+
+1. Install dependencies:
+
+```bash
+pnpm add @radix-ui/react-slot class-variance-authority clsx tailwind-merge
+```
+
+2. Copy the component code from the documentation
+3. Add to your `components/ui` folder
+
+<Callout type="warning" title="Tailwind Configuration">
+  Make sure your `tailwind.config.js` includes the components path in the content array.
+</Callout>
+
+## Configuration
+
+### Tailwind CSS
+
+Ensure your `tailwind.config.js` includes:
+
+```js
+module.exports = {
+  content: [
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  // ... rest of config
+}
+```
+
+### CSS Variables
+
+Add the required CSS variables to your `globals.css`:
+
+```css
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 24 85% 38%;
+    /* ... other variables */
+  }
+}
+```
+
+## Next Steps
+
+- Explore [Primitives](/docs/primitives) to understand the component architecture
+- Learn about [Theming](/docs/theming) to customize the look and feel
+- Browse [Components](/docs/components) to see all available components

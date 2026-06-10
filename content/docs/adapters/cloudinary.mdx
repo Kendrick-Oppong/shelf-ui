@@ -1,0 +1,36 @@
+---
+title: Cloudinary
+description: Use Shelf UI with Cloudinary for advanced image and video management.
+icon: Image
+---
+
+import { Badge } from "@/components/ui/badge"
+
+<div className="flex gap-2 mb-6">
+  <Badge>Cloudinary</Badge>
+  <Badge variant="outline">Media</Badge>
+</div>
+
+## Introduction
+
+The Cloudinary adapter provides powerful image and video transformation capabilities with automatic optimization and CDN delivery.
+
+<Callout type="info" title="Coming Soon">
+  Full documentation for Cloudinary integration is being written. Check back soon!
+</Callout>
+
+## Quick Start
+
+```bash
+pnpm add cloudinary
+```
+
+```tsx
+import { v2 as cloudinary } from 'cloudinary'
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+```

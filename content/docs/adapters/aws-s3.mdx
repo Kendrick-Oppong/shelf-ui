@@ -1,0 +1,38 @@
+---
+title: AWS S3
+description: Integrate Shelf UI components with Amazon S3 for scalable file storage.
+icon: Cloud
+---
+
+import { Badge } from "@/components/ui/badge"
+
+<div className="flex gap-2 mb-6">
+  <Badge>AWS</Badge>
+  <Badge variant="outline">S3</Badge>
+</div>
+
+## Introduction
+
+The AWS S3 adapter enables seamless integration with Amazon S3, providing enterprise-grade file storage with high availability and durability.
+
+<Callout type="info" title="Coming Soon">
+  Full documentation for AWS S3 integration is being written. Check back soon!
+</Callout>
+
+## Quick Start
+
+```bash
+pnpm add @aws-sdk/client-s3
+```
+
+```tsx
+import { S3Client } from "@aws-sdk/client-s3"
+
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+})
+```
