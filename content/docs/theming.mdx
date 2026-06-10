@@ -1,0 +1,124 @@
+---
+title: Theming
+description: Customize the look and feel of Shelf UI components.
+---
+
+## Theme System
+
+Shelf UI uses CSS variables for theming, making it easy to customize colors, spacing, and typography across all components.
+
+## Color Palette
+
+### Light Mode
+
+```css
+:root {
+  --background: #f4f4f5;
+  --foreground: #09090b;
+  --primary: #b45309;
+  --primary-foreground: #ffffff;
+  --muted: #e4e4e7;
+  --muted-foreground: #747477;
+  --border: #d4d4d8;
+}
+```
+
+### Dark Mode
+
+```css
+.dark {
+  --background: #07070a;
+  --foreground: #eeedf5;
+  --primary: #f0b429;
+  --primary-foreground: #07070a;
+  --muted: #18181f;
+  --muted-foreground: #99999e;
+  --border: rgba(255, 255, 255, 0.06);
+}
+```
+
+<Callout type="info" title="Automatic Dark Mode">
+  Shelf UI automatically adapts to dark mode using the `.dark` class on your `<html>` element.
+</Callout>
+
+## Typography
+
+### Font Families
+
+```css
+:root {
+  --font-sans: "Bai Jamjuree", sans-serif;
+  --font-mono: "Courier Prime", "Consolas", monospace;
+}
+```
+
+### Font Sizes
+
+We use a fluid type scale:
+
+- **Headings**: `clamp(2rem, 5vw, 4rem)`
+- **Body**: `1rem` (16px)
+- **Small**: `0.875rem` (14px)
+- **Tiny**: `0.75rem` (12px)
+
+## Border Radius
+
+Control roundness across all components:
+
+```css
+:root {
+  --radius: 0.625rem; /* 10px */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+```
+
+## Shadows
+
+We provide a comprehensive shadow system:
+
+```css
+:root {
+  --shadow-sm: 0px 2px 6px 0px hsl(0 0% 0% / 0.09);
+  --shadow: 0px 4px 10px 0px hsl(0 0% 0% / 0.1);
+  --shadow-lg: 0px 8px 20px 0px hsl(0 0% 0% / 0.12);
+}
+```
+
+## Customization Examples
+
+### Brand Colors
+
+Override the primary color:
+
+```css
+:root {
+  --primary: #3b82f6; /* Blue */
+  --primary-foreground: #ffffff;
+}
+
+.dark {
+  --primary: #60a5fa; /* Lighter blue for dark mode */
+}
+```
+
+### Custom Component
+
+Create a custom variant:
+
+```tsx
+import { cva } from "class-variance-authority"
+
+const buttonVariants = cva("base-button", {
+  variants: {
+    variant: {
+      custom: "bg-gradient-to-r from-purple-500 to-pink-500"
+    }
+  }
+})
+```
+
+<Callout type="success" title="Theme Preview">
+  Use the theme toggle in the header to preview light and dark modes.
+</Callout>

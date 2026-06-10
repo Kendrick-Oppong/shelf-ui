@@ -1,7 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
+@import "fumadocs-ui/css/shadcn.css";
+@import "fumadocs-ui/css/preset.css";
 @custom-variant dark (&:is(.dark *));
 
 /* ─────────────────────────────────────────
@@ -201,6 +202,24 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
+  /* Fumadocs color mapping */
+  --color-fd-background: var(--background);
+  --color-fd-foreground: var(--foreground);
+  --color-fd-primary: var(--primary);
+  --color-fd-primary-foreground: var(--primary-foreground);
+  --color-fd-secondary: var(--secondary);
+  --color-fd-secondary-foreground: var(--secondary-foreground);
+  --color-fd-muted: var(--muted);
+  --color-fd-muted-foreground: var(--muted-foreground);
+  --color-fd-accent: var(--accent);
+  --color-fd-accent-foreground: var(--accent-foreground);
+  --color-fd-border: var(--border);
+  --color-fd-ring: var(--ring);
+  --color-fd-card: var(--card);
+  --color-fd-card-foreground: var(--card-foreground);
+  --color-fd-popover: var(--popover);
+  --color-fd-popover-foreground: var(--popover-foreground);
+
   /* Fonts */
   --font-sans: "Bai Jamjuree", sans-serif;
   --font-mono: "Courier Prime", "Consolas", monospace;
@@ -230,6 +249,15 @@
   --tracking-wide: calc(var(--tracking-normal) + 0.025em);
   --tracking-wider: calc(var(--tracking-normal) + 0.05em);
   --tracking-widest: calc(var(--tracking-normal) + 0.1em);
+}
+
+/* ─────────────────────────────────────────
+   FUMADOCS LAYOUT CUSTOMIZATION
+───────────────────────────────────────── */
+:root {
+  /* Layout widths */
+  --fd-sidebar-width: 100%;
+  --fd-toc-width: 260px;
 }
 
 /* ─────────────────────────────────────────
@@ -325,4 +353,48 @@
 
 @utility eyebrow-text {
   @apply text-[11px] text-primary font-bold tracking-widest uppercase;
+}
+
+@layer utilities {
+  /* entire docs  */
+  #nd-notebook-layout {
+    @apply mx-auto;
+  }
+  /* sidebar & header */
+  #nd-sidebar,
+  #nd-subnav {
+    @apply bg-card!;
+  }
+  #nd-sidebar {
+    @apply border-l;
+  }
+
+  #nd-subnav {
+    @apply border-r;
+  }
+  /* Target the main search container wrapper */
+  [data-search-full] {
+    @apply bg-secondary! border border-border text-secondary-foreground rounded-xl transition-all duration-200;
+  }
+  /* Target the shortcut key caps (Ctrl K / ⌘ K wrapper tags) */
+  [data-search-full] kbd {
+    @apply bg-secondary border-border! text-secondary-foreground font-sans px-2 py-0.5 rounded-md shadow-inner text-[10px];
+  }
+
+  /* mdx customization */
+  .prose p {
+    @apply my-3!;
+  }
+
+  .prose h1 {
+    @apply text-xl! mb-2;
+  }
+
+  .prose h2 {
+    @apply text-lg! mb-2;
+  }
+
+  .prose h3 {
+    @apply text-base! mb-2;
+  }
 }

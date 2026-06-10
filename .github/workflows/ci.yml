@@ -23,6 +23,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm check          # Ultracite lint + format check
+
+      - run: pnpm exec next typegen
+
       - run: pnpm typecheck      # TypeScript
       # - run: pnpm registry:check # Validate registry output
 

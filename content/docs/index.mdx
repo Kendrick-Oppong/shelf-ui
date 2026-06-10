@@ -1,0 +1,86 @@
+---
+title: Introduction
+description: A shadcn-style file UI component library. Copy-paste components for the complete file experience.
+---
+
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+
+## What is Shelf UI
+
+Shelf UI is an open-source component library built on the
+[shadcn](https://ui.shadcn.com) registry model. It covers the entire file
+experience — upload, preview, manage, navigate — with first-class integrations
+for Supabase Storage, AWS S3, and Cloudinary.
+
+Like shadcn, users copy components directly into their project. Unlike existing
+libraries, Shelf UI is the only one that treats file management as a complete UI
+domain, not just a dropzone widget.
+
+> **Note**
+>
+> Shelf UI is not a component library you install as a dependency. Components
+> are copied into your project using the shadcn CLI. You own the code.
+
+## How it works
+
+Components are distributed via the shadcn open registry spec. When you run the
+install command, the shadcn CLI fetches the component source from the Shelf UI
+registry and copies it into your project — along with any required peer
+dependencies.
+
+<Tabs groupId="install" items={["npm", "pnpm", "yarn", "bun"]} persist>
+  <Tab value="npm">
+```bash title="terminal"
+npx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+  <Tab value="pnpm">
+```bash title="terminal"
+pnpm dlx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+  <Tab value="yarn">
+```bash title="terminal"
+yarn dlx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+  <Tab value="bun">
+```bash title="terminal"
+bunx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+</Tabs>
+
+The component lands in your project at:
+
+```bash
+components/shelf-ui/dropzone.tsx
+```
+
+From there, the component is yours. Edit the styles, modify the behavior. No version lock-in, no upstream breaking changes.
+
+## FAQ
+
+<Accordions type="single">
+  <Accordion title="Do I need to install anything?">
+    No global install required. Each component installs its own peer
+    dependencies (Radix UI or Base UI, Tailwind, Lucide) via the shadcn CLI.
+    Run one command per component.
+  </Accordion>
+  <Accordion title="Which primitive should I use?">
+    Both Radix UI and Base UI are fully supported. The component API is
+    identical — only the internals differ. See the
+    <a href="/docs/getting-started/primitives">Primitives</a> guide for help
+    choosing.
+  </Accordion>
+  <Accordion title="Does this work with my existing shadcn setup?">
+    Yes. Shelf UI is a separate registry that integrates with your existing
+    <code>components.json</code>. Add the registry alias once and all Shelf UI
+    components install with the same CLI you already use.
+  </Accordion>
+  <Accordion title="Can I use only some components?">
+    Yes — that's the point. Install only what you need. Components are
+    independent; installing Dropzone doesn't pull in FileTree.
+  </Accordion>
+</Accordions>

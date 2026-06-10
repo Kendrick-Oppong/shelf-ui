@@ -1,0 +1,168 @@
+---
+title: Supabase Storage
+description: Use Shelf UI components with Supabase Storage for seamless file uploads.
+icon: Database
+---
+
+import { Badge } from "@/components/ui/badge"
+
+<div className="flex gap-2 mb-6">
+  <Badge>Supabase</Badge>
+  <Badge variant="outline">Storage</Badge>
+</div>
+
+## Introduction
+
+The Supabase adapter provides first-class integration with Supabase Storage, making it easy to upload, manage, and serve files directly from your Supabase project.
+
+## Installation
+
+```bash
+pnpm add @supabase/supabase-js
+```
+
+## Setup
+
+### 1. Create Supabase Client
+
+```tsx
+// lib/supabase.ts
+import { createClient } from '@supabase/supabase-js'
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+```
+
+### 2. Create Storage Bucket
+
+In your Supabase dashboard:
+1. Go to **Storage**
+2. Create a new bucket (e.g., `uploads`)
+3. Set the bucket policy (public or private)
+
+<Callout type="warning" title="Storage Policies">
+  Make sure to configure Row Level Security (RLS) policies for your storage bucket to control access.
+</Callout>
+
+## Usage
+
+### Basic Upload
+
+```tsx
+import { Dropzone } from "@/components/ui/dropzone"
+import { supabase } from "@/lib/supabase"
+import { useState } from "react"
+
+export function SupabaseUpload() {
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async (files: File[]) => {
+    setUploading(true)
+    
+    for (const file of files) {
+      const filePath = `${Date.now()}-${file.name}`
+      
+      const { data, error } = await supabase.storage
+        .from('uploads')
+        .upload(filePath, file)
+      
+      if (error) {
+        console.error('Upload error:', error)
+      } else {
+        console.log('Uploaded:', data.path)
+      }
+    }
+    
+    setUploading(false)
+  }
+
+  return (
+    <Dropzone onDrop={handleUpload} disabled={uploading}>
+      {uploading ? 'Uploading...' : 'Drop files to upload'}
+    </Dropzone>
+  )
+}
+```
+
+### Get Public URL
+
+```tsx
+const { data } = supabase.storage
+  .from('uploads')
+  .getPublicUrl('file-path.jpg')
+
+console.log(data.publicUrl)
+```
+
+### Download File
+
+```tsx
+const { data, error } = await supabase.storage
+  .from('uploads')
+  .download('file-path.jpg')
+```
+
+### Delete File
+
+```tsx
+const { error } = await supabase.storage
+  .from('uploads')
+  .remove(['file-path.jpg'])
+```
+
+## Advanced
+
+### Upload with Progress
+
+```tsx
+import { UploadProgress } from "@/components/ui/upload-progress"
+
+const { data, error } = await supabase.storage
+  .from('uploads')
+  .upload(filePath, file, {
+    cacheControl: '3600',
+    upsert: false,
+    onUploadProgress: (progress) => {
+      const percent = (progress.loaded / progress.total) * 100
+      console.log(`Upload ${percent}% complete`)
+    }
+  })
+```
+
+### Image Transformations
+
+Supabase supports on-the-fly image transformations:
+
+```tsx
+const { data } = supabase.storage
+  .from('uploads')
+  .getPublicUrl('image.jpg', {
+    transform: {
+      width: 500,
+      height: 500,
+      resize: 'cover',
+      quality: 80
+    }
+  })
+```
+
+<Callout type="success" title="Optimized Delivery">
+  Supabase Storage uses Cloudflare CDN for fast, global file delivery.
+</Callout>
+
+## Environment Variables
+
+Add these to your `.env.local`:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+## Related
+
+- [AWS S3](/docs/adapters/aws-s3) — Amazon S3 integration
+- [Cloudinary](/docs/adapters/cloudinary) — Cloudinary integration
+- [Dropzone](/docs/components/dropzone) — Upload component

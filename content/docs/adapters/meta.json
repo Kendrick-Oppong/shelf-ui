@@ -1,0 +1,6 @@
+{
+  "title": "Adapters",
+  "root": true,
+  "description": "Storage provider integrations",
+  "pages": ["supabase", "aws-s3", "cloudinary"]
+}
