@@ -8,7 +8,7 @@ export function ModeToggle() {
 
   return (
     <button
-      className="relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-transparent text-muted-foreground transition-all hover:border-border-strong hover:bg-card-hover hover:text-foreground"
+      className="relative flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-transparent text-muted-foreground transition-all hover:border-border-strong hover:bg-card-hover hover:text-foreground"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
       type="button"
     >
