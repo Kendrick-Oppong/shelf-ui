@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { GitHubMark, ShelfLogo } from "@/components/shared/header-primitives";
 import { ModeToggle } from "@/components/shared/mode-toggle";
+import { GITHUB_REPO_URL } from "@/lib/constants";
 
 const SHELF_NAV_LINKS = [
   { label: "Docs", href: "/docs" },
@@ -58,7 +59,7 @@ export function Header() {
             {/* Desktop-only actions */}
             <Link
               className="hidden items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-transparent px-3 py-1.5 font-medium text-[12px] text-muted-foreground no-underline transition-all hover:border-border-strong hover:text-foreground md:flex"
-              href="https://github.com/Kendrick-Oppong/shelf-ui"
+              href={GITHUB_REPO_URL}
               rel="noopener noreferrer"
               target="_blank"
             >
@@ -175,7 +176,7 @@ export function Header() {
             >
               <Link
                 className="flex items-center justify-center gap-2 rounded-2xl border border-border bg-transparent py-3 font-medium text-[14px] text-muted-foreground no-underline transition-all hover:border-border-strong hover:text-foreground"
-                href="https://github.com/Kendrick-Oppong/shelf-ui"
+                href={GITHUB_REPO_URL}
                 rel="noopener noreferrer"
                 target="_blank"
               >

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { GITHUB_REPO_URL, LINKEDIN_URL } from "@/lib/constants";
 
 const FOOTER_LINKS = [
   {
     label: "GitHub",
-    href: "https://github.com/Kendrick-Oppong/shelf-ui",
+    href: GITHUB_REPO_URL,
     isExternal: true,
   },
   { label: "Docs", href: "/docs", isExternal: false },
@@ -18,7 +19,7 @@ const FOOTER_LINKS = [
   { label: "Changelog", href: "/changelog", isExternal: false },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/in/kendrick-oppong",
+    href: LINKEDIN_URL,
     isExternal: true,
   },
 ] as const;

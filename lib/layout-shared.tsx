@@ -1,5 +1,6 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { ModeToggle } from "@/components/shared/mode-toggle";
+import { GITHUB_REPO_URL } from "@/lib/constants";
 
 export function baseOptions(): BaseLayoutProps {
   return {
@@ -14,7 +15,7 @@ export function baseOptions(): BaseLayoutProps {
     },
 
     // GitHub integration
-    githubUrl: "https://github.com/Kendrick-Oppong/shelf-ui",
+    githubUrl: GITHUB_REPO_URL,
 
     // Links in navigation
     links: [
