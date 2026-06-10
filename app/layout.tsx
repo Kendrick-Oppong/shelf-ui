@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bai_Jamjuree, Courier_Prime } from "next/font/google";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import "./globals.css";
+import { RootProvider } from "fumadocs-ui/provider/next";
 
 const fontSans = Bai_Jamjuree({
   subsets: ["latin"],
@@ -75,7 +76,7 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          {children}
+          <RootProvider theme={{ enabled: false }}>{children}</RootProvider>
         </ThemeProvider>
       </body>
     </html>
