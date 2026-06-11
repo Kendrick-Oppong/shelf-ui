@@ -1,4 +1,12 @@
 {
   "title": "Documentation",
-  "pages": ["index", "installation", "primitives", "theming"]
+  "pages": [
+    "index",
+    "installation",
+    "primitives",
+    "theming",
+    "skills",
+    "mcp",
+    "llms"
+  ]
 }

@@ -1,91 +1,166 @@
 ---
 title: Primitives
-description: Understanding the building blocks of Shelf UI components.
+description: How Shelf UI's dual-primitive system works — choose Radix UI or Base UI once and never worry about it again.
 ---
 
-## What are Primitives?
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Files, Folder, File } from "fumadocs-ui/components/files";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
-Shelf UI is built on top of unstyled, accessible component primitives from **Radix UI** and **Base UI**. These primitives provide:
+Every interactive Shelf UI component ships with two implementations: one built on **Radix UI**, one built on **Base UI**. The component API is identical — only the internal primitive layer differs. You choose once, at project init, and never revisit it.
 
-- **Accessibility** — ARIA attributes, keyboard navigation, focus management
-- **Behavior** — Component logic without styling opinions
-- **Flexibility** — Full control over styling and structure
+## What are primitives?
 
-## Why Primitives?
+Primitives are unstyled, accessible, headless components that handle behavior — keyboard navigation, focus management, ARIA attributes, screen reader announcements — without imposing any visual opinions. Shelf UI components are built on top of them.
 
-Using primitives allows us to:
+We support two primitive libraries:
 
-1. **Maintain Accessibility** — Built-in WCAG compliance
-2. **Stay Flexible** — Style components however you want
-3. **Reduce Bundle Size** — Only import what you need
-4. **Ensure Quality** — Battle-tested by thousands of developers
+| | Radix UI | Base UI |
+| --- | --- | --- |
+| **Maintained by** | WorkOS | MUI team |
+| **Used in** | shadcn/ui, Vercel, Linear | MUI ecosystem |
+| **Maturity** | Production-proven, ~5 years old | Newer, rapidly growing |
+| **Bundle size** | Per-package (tree-shakeable) | Per-package (tree-shakeable) |
+| **React compatibility** | React 16+ | React 18+ |
+| **WAI-ARIA** | Full compliance | Full compliance |
+| **Animation** | Via CSS or Framer Motion | Via CSS or Framer Motion |
 
-## Primitive Libraries
+## How to choose
 
-### Radix UI
-
-Used for most interactive components:
-
-- Dropzone (via `@radix-ui/react-slot`)
-- Dropdown menus
-- Dialogs and modals
-- Tooltips
-
-```tsx
-import * as DropzonePrimitive from "@radix-ui/react-slot"
-```
-
-### Base UI
-
-Alternative primitive library from Material UI team:
-
-- Form controls
-- Select components
-- Tab interfaces
-
-```tsx
-import { useFileUpload } from "@/hooks/use-file-upload"
-```
-
-<Callout type="info" title="Choose Your Primitive">
-  Most Shelf UI components offer both Radix UI and Base UI implementations. Choose the one that fits your project best.
+<Callout type="info">
+  This is exactly how shadcn/ui handles dual primitives. The pattern is proven — pick one and move on.
 </Callout>
 
-## Component Structure
+<Tabs items={["New project", "Existing shadcn/ui project", "Existing MUI project"]}>
+  <Tab value="New project">
+    **Use Radix UI.**
 
-Each Shelf UI component follows this pattern:
+    It has the largest ecosystem, the most third-party examples, and the deepest shadcn/ui integration. If you're starting fresh, Radix is the safer default.
 
-<FileTree>
-  <FileTreeItem name="components" icon="folder">
-    <FileTreeItem name="ui" icon="folder">
-      <FileTreeItem name="dropzone.tsx" icon="file" />
-    </FileTreeItem>
-  </FileTreeItem>
-  <FileTreeItem name="hooks" icon="folder">
-    <FileTreeItem name="use-file-upload.ts" icon="file" />
-  </FileTreeItem>
-  <FileTreeItem name="lib" icon="folder">
-    <FileTreeItem name="utils.ts" icon="file" />
-  </FileTreeItem>
-</FileTree>
+    ```bash title="terminal"
+    # When prompted by the Shelf UI CLI:
+    ? Which primitive layer? › Radix UI
+    ```
+  </Tab>
+  <Tab value="Existing shadcn/ui project">
+    **Use Radix UI.**
 
-## Styling Approach
+    Your project already has Radix UI installed as a peer dependency. Shelf UI's Radix variant will slot in with zero additional dependencies.
+  </Tab>
+  <Tab value="Existing MUI project">
+    **Use Base UI.**
 
-We use **class-variance-authority** for variant management:
+    If you're already using MUI's Base UI primitives elsewhere in your app, use the Base UI variant to stay consistent and avoid shipping two primitive libraries.
+  </Tab>
+</Tabs>
 
-```tsx
-const dropzoneVariants = cva(
-  "base-styles",
-  {
-    variants: {
-      size: {
-        sm: "h-32",
-        md: "h-48",
-        lg: "h-64",
-      }
-    }
-  }
-)
+## Switching later
+
+Switching is zero-cost. The import path is the same for both variants:
+
+```tsx title="Your component — unchanged regardless of primitive"
+import { Dropzone } from "@/components/shelf-ui/dropzone";
+
+// Props, events, and behavior are identical
+<Dropzone onDrop={handleDrop} accept={["image/*"]} maxSize={10_000_000} />
 ```
 
-This provides type-safe variants with IntelliSense support.
+The only difference is the file that gets copied into your project. To switch, delete the component file and re-add it with the other primitive:
+
+```bash title="terminal"
+# Remove the Radix version
+rm components/shelf-ui/dropzone.tsx
+
+# Re-add with Base UI
+npx shadcn@latest add @shelf-ui/dropzone --primitive base
+```
+
+## File structure
+
+When you add a Shelf UI component, the CLI copies the correct primitive implementation into your project:
+
+<Tabs items={["Radix UI", "Base UI"]}>
+  <Tab value="Radix UI">
+    <Files>
+      <Folder name="components" defaultOpen>
+        <Folder name="shelf-ui" defaultOpen>
+          <File name="dropzone.tsx" />
+          <File name="file-card.tsx" />
+          <File name="file-list.tsx" />
+        </Folder>
+      </Folder>
+      <Folder name="hooks">
+        <File name="use-file-upload.ts" />
+      </Folder>
+    </Files>
+
+    The Radix variant uses `@radix-ui/react-slot` and related Radix packages as peers.
+  </Tab>
+  <Tab value="Base UI">
+    <Files>
+      <Folder name="components" defaultOpen>
+        <Folder name="shelf-ui" defaultOpen>
+          <File name="dropzone.tsx" />
+          <File name="file-card.tsx" />
+          <File name="file-list.tsx" />
+        </Folder>
+      </Folder>
+      <Folder name="hooks">
+        <File name="use-file-upload.ts" />
+      </Folder>
+    </Files>
+
+    The Base UI variant uses `@base-ui-components/react` as a peer.
+  </Tab>
+</Tabs>
+
+<Callout type="tip">
+  Components that don't use interactive primitives — `FileCard`, `FileIcon`, `AttachmentChip` — ship as a single file regardless of which primitive you choose.
+</Callout>
+
+## Headless hooks
+
+Every interactive component ships with its underlying hook. Use the hook directly if you want to build a completely custom UI:
+
+```tsx title="Using the hook without the pre-built component"
+import { useFileUpload } from "@/hooks/use-file-upload";
+
+export function CustomDropzone() {
+  const { files, isDragging, open, getRootProps, getInputProps } = useFileUpload({
+    accept: ["image/*"],
+    maxSize: 5_000_000,
+    onDrop: (accepted) => console.log(accepted),
+  });
+
+  return (
+    <div
+      {...getRootProps()}
+      data-dragging={isDragging}
+      className="my-custom-zone"
+    >
+      <input {...getInputProps()} />
+      {isDragging ? "Drop files here" : "Drag files or click to upload"}
+    </div>
+  );
+}
+```
+
+The hook is identical regardless of which primitive variant you installed.
+
+## FAQ
+
+<Accordions type="single">
+  <Accordion title="Do I need to install Radix UI or Base UI globally?">
+    No. The shadcn CLI handles peer dependency installation when you add each component. You only install what each component actually needs.
+  </Accordion>
+  <Accordion title="Can I mix Radix and Base UI components in the same project?">
+    Technically yes, but it's not recommended — you'd ship two primitive libraries. Pick one and stick with it across all Shelf UI components.
+  </Accordion>
+  <Accordion title="Which primitive is more performant?">
+    In practice, both are negligible in isolation. The performance difference is not a valid selection criterion. Choose based on ecosystem fit.
+  </Accordion>
+  <Accordion title="What happens if a component doesn't need a primitive?">
+    Components like `FileCard`, `FileIcon`, and `StorageQuota` are pure display components. They don't use Radix or Base UI at all — there's no choice to make for these.
+  </Accordion>
+</Accordions>

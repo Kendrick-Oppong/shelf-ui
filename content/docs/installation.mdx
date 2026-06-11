@@ -3,79 +3,176 @@ title: Installation
 description: How to install and set up Shelf UI components in your project.
 ---
 
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
+Shelf UI components are designed for React projects using Tailwind CSS v4 and TypeScript. Follow the steps below to get set up.
+
 ## Prerequisites
 
-Before you begin, ensure you have:
+Make sure your project has the following:
 
-- Node.js 18+ installed
-- A React 18+ project (Next.js, Vite, etc.)
-- Tailwind CSS configured
+- [React 19](https://react.dev) or later
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [TypeScript](https://typescriptlang.org)
 
-## Installation Methods
+Shelf UI also depends on shared utilities from [shadcn/ui](https://ui.shadcn.com). If you don't have shadcn set up yet, initialize it first:
 
-### Using shadcn CLI (Recommended)
-
-The easiest way to add Shelf UI components:
-
-```bash
-pnpm dlx shadcn@latest add @shelf-ui/dropzone
+<Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
+  <Tab value="npm">
+```bash title="terminal"
+npx shadcn@latest init
 ```
-
-This will:
-- Install the component and its dependencies
-- Add the component to your `components/ui` folder
-- Set up necessary utilities
-
-### Manual Installation
-
-If you prefer manual setup:
-
-1. Install dependencies:
-
-```bash
-pnpm add @radix-ui/react-slot class-variance-authority clsx tailwind-merge
+  </Tab>
+  <Tab value="pnpm">
+```bash title="terminal"
+pnpm dlx shadcn@latest init
 ```
-
-2. Copy the component code from the documentation
-3. Add to your `components/ui` folder
-
-<Callout type="warning" title="Tailwind Configuration">
-  Make sure your `tailwind.config.js` includes the components path in the content array.
-</Callout>
-
-## Configuration
-
-### Tailwind CSS
-
-Ensure your `tailwind.config.js` includes:
-
-```js
-module.exports = {
-  content: [
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  // ... rest of config
-}
+  </Tab>
+  <Tab value="yarn">
+```bash title="terminal"
+yarn dlx shadcn@latest init
 ```
+  </Tab>
+  <Tab value="bun">
+```bash title="terminal"
+bunx shadcn@latest init
+```
+  </Tab>
+</Tabs>
 
-### CSS Variables
+## Add registry
 
-Add the required CSS variables to your `globals.css`:
+Add the Shelf UI registry to your `components.json`:
 
-```css
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --primary: 24 85% 38%;
-    /* ... other variables */
+```json title="components.json"
+{
+  "registries": {
+    "@shelf-ui": "https://shelfui.dev/r/{name}.json"
   }
 }
 ```
 
-## Next Steps
+## Add components
 
-- Explore [Primitives](/docs/primitives) to understand the component architecture
-- Learn about [Theming](/docs/theming) to customize the look and feel
-- Browse [Components](/docs/components) to see all available components
+### Option 1: shadcn CLI (recommended)
+
+Shelf UI is in the shadcn directory. No extra config needed — add components directly:
+
+<Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
+  <Tab value="npm">
+```bash title="terminal"
+npx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+  <Tab value="pnpm">
+```bash title="terminal"
+pnpm dlx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+  <Tab value="yarn">
+```bash title="terminal"
+yarn dlx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+  <Tab value="bun">
+```bash title="terminal"
+bunx shadcn@latest add @shelf-ui/dropzone
+```
+  </Tab>
+</Tabs>
+
+### Option 2: Direct URL
+
+Add components by passing the registry URL directly:
+
+<Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
+  <Tab value="npm">
+```bash title="terminal"
+npx shadcn@latest add https://shelfui.dev/r/dropzone.json
+```
+  </Tab>
+  <Tab value="pnpm">
+```bash title="terminal"
+pnpm dlx shadcn@latest add https://shelfui.dev/r/dropzone.json
+```
+  </Tab>
+  <Tab value="yarn">
+```bash title="terminal"
+yarn dlx shadcn@latest add https://shelfui.dev/r/dropzone.json
+```
+  </Tab>
+  <Tab value="bun">
+```bash title="terminal"
+bunx shadcn@latest add https://shelfui.dev/r/dropzone.json
+```
+  </Tab>
+</Tabs>
+
+### Option 3: Manual installation
+
+Copy the component source directly from its docs page into your project and install the required dependencies listed on that page.
+
+<Callout type="info">
+  Each component page includes the full source and a list of peer dependencies
+  required. The shadcn CLI handles this automatically in Options 1 and 2.
+</Callout>
+
+## Project structure
+
+After adding components, your project will look like this:
+
+```bash title="project structure"
+components/
+├── shelf-ui/
+│   └── dropzone.tsx          # Shelf UI component
+├── ui/
+│   ├── button.tsx            # shadcn/ui primitive
+│   └── ...
+hooks/
+│   └── use-file-upload.ts    # Shelf UI hook
+└── ...
+```
+
+Components in `shelf-ui/` are Shelf UI primitives. Components in `ui/` are shared shadcn/ui primitives that Shelf UI components may depend on.
+
+## Usage
+
+Import and use components directly:
+
+```tsx title="app/page.tsx"
+import { Dropzone } from "@/components/shelf-ui/dropzone";
+import {
+  FileCard,
+  FileCardActions,
+  FileCardIcon,
+  FileCardInfo,
+} from "@/components/shelf-ui/file-card";
+
+export default function Page() {
+  return (
+    <>
+      {/* Simple component — use props */}
+      <Dropzone
+        onDrop={(files) => console.log(files)}
+        accept={["image/*", ".pdf"]}
+        maxSize={10 * 1024 * 1024}
+      />
+
+      {/* Compound component — compose sub-components */}
+      <FileCard>
+        <FileCardIcon type="pdf" />
+        <FileCardInfo name="report.pdf" size="2.4 MB" />
+        <FileCardActions>
+          <Button size="icon">
+            <Download />
+          </Button>
+        </FileCardActions>
+      </FileCard>
+    </>
+  );
+}
+```
+
+See individual component pages for detailed usage, props, and examples.
