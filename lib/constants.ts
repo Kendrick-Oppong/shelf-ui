@@ -21,6 +21,6 @@ export const JSON_LD_SCHEMA = {
   author: {
     "@type": "Person",
     name: "Kendrick Oppong",
-    url: "https://x.com/kendrickoppong",
+    url: "https://www.linkedin.com/in/kendrick-oppong/",
   },
 } as const;
