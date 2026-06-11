@@ -9,7 +9,7 @@ export const docs = defineDocs({
     postprocess: {
       includeProcessedMarkdown: true,
     },
-      schema: pageSchema.extend({
+    schema: pageSchema.extend({
       badge: pageSchema.shape.title.optional(),
     }),
   },
