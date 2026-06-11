@@ -48,6 +48,8 @@
     "start": "next start",
     "lint": "biome check",
     "lint:links": "tsx scripts/lint.ts",
+    "lint:registry": "tsx scripts/check-registry-drift.ts",
+    "build:registry": "tsx scripts/build-registry.ts",
     "format": "biome format --write",
     "check": "ultracite check",
     "fix": "ultracite fix",
