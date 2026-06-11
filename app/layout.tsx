@@ -3,6 +3,7 @@ import { Bai_Jamjuree, Courier_Prime } from "next/font/google";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import "./globals.css";
 import { RootProvider } from "fumadocs-ui/provider/next";
+import { APP_URL } from "@/lib/constants";
 
 const fontSans = Bai_Jamjuree({
   subsets: ["latin"],
@@ -35,11 +36,11 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Kendrick Oppong" }],
   creator: "Kendrick Oppong",
-  metadataBase: new URL("https://shelfui.dev"),
+  metadataBase: new URL(APP_URL),
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://shelfui.dev",
+    url: APP_URL,
     title: "Shelf UI — File UI Components for React",
     description:
       "Copy-paste file UI components for React. Upload, preview, manage, navigate — with first-class Supabase, S3, and Cloudinary support.",
