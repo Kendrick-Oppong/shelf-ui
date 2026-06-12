@@ -11,6 +11,15 @@ const config = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/docs",
+        destination: "/docs/getting-started",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 const withMDX = createMDX({
