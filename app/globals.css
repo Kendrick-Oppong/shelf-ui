@@ -387,11 +387,11 @@
   }
 
   .prose h1 {
-    @apply text-xl! mb-2;
+    @apply text-2xl! mb-2;
   }
 
   .prose h2 {
-    @apply text-lg! mb-2;
+    @apply text-xl! mb-2;
   }
 
   .prose h3 {

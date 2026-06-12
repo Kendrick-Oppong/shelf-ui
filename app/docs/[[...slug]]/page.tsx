@@ -1,22 +1,17 @@
-import { getGithubLastEdit } from "fumadocs-core/content/github";
 import {
   DocsBody,
   DocsDescription,
   DocsPage,
   DocsTitle,
-  PageLastUpdate,
   ViewOptionsPopover,
 } from "fumadocs-ui/layouts/notebook/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getMDXComponents } from "@/components/docs/mdx";
-import {
-  GITHUB_OWNER,
-  GITHUB_REPO_NAME,
-  GITHUB_REPO_URL,
-} from "@/lib/constants";
-import { source } from "@/lib/source";
+import { GITHUB_REPO_URL } from "@/lib/constants";
+import { getPageImage, source } from "@/lib/source";
+import { formatDate } from "@/lib/utils";
+import { getMDXComponents } from "@/mdx-components";
 
 export default async function Page(
   props: Readonly<PageProps<"/docs/[[...slug]]">>
@@ -29,13 +24,8 @@ export default async function Page(
 
   const MDX = page.data.body;
   const githubUrl = `${GITHUB_REPO_URL}/tree/main/content/docs/${page.path}`;
-  const lastModifiedTime = await getGithubLastEdit({
-    owner: GITHUB_OWNER,
-    repo: GITHUB_REPO_NAME,
-    path: `content/docs/${page.path}`,
-  });
-  console.log(lastModifiedTime);
-  console.log("page.path:", page.path);
+  const lastModifiedTime = page.data.lastModified;
+
   return (
     <DocsPage
       className="p-5!"
@@ -43,6 +33,14 @@ export default async function Page(
       tableOfContent={{
         style: "clerk",
         container: { className: "bg-card border border-t-0 px-3 py-5" },
+        footer: (
+          <ViewOptionsPopover
+            className="mx-auto mt-5 w-full p-2 text-center"
+            githubUrl={githubUrl}
+          >
+            Ask AI
+          </ViewOptionsPopover>
+        ),
       }}
       toc={page.data.toc}
     >
@@ -56,8 +54,12 @@ export default async function Page(
           })}
         />
       </DocsBody>
-      <ViewOptionsPopover githubUrl={githubUrl} />
-      {lastModifiedTime && <PageLastUpdate date={lastModifiedTime} />}
+
+      {lastModifiedTime && (
+        <p className="rounded-lg border bg-card px-4 py-2 font-semibold text-muted-foreground text-sm">
+          Last Updated on {formatDate(lastModifiedTime)}
+        </p>
+      )}
     </DocsPage>
   );
 }
@@ -78,5 +80,8 @@ export async function generateMetadata(
   return {
     title: page.data.title,
     description: page.data.description,
+    openGraph: {
+      images: getPageImage(page).url,
+    },
   };
 }

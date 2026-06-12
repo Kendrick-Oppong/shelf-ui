@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -10,20 +11,12 @@ export function ShelfLogo({ className, href = "/" }: Readonly<ShelfLogoProps>) {
   return (
     <Link
       className={cn(
-        "flex items-center gap-2.5 font-bold text-[14px] text-foreground tracking-[-0.01em] no-underline",
+        "flex items-center font-bold text-[14px] text-foreground tracking-[-0.01em] no-underline",
         className
       )}
       href={href}
     >
-      <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-linear-to-br from-primary to-primary/60">
-        <svg
-          aria-hidden="true"
-          className="size-3.5 fill-none stroke-[2.5px] stroke-background"
-          viewBox="0 0 24 24"
-        >
-          <path d="M4 6h16M4 12h16M4 18h10" />
-        </svg>
-      </div>
+      <Image alt="Logo" height={40} priority src="/logo.png" width={40} />
       Shelf UI
     </Link>
   );

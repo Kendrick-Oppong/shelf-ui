@@ -1,0 +1,158 @@
+﻿---
+title: Skills
+description: Give your AI coding assistant full knowledge of Shelf UI — so it installs, composes, and customizes components correctly on the first try.
+---
+
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Card, Cards } from "fumadocs-ui/components/card";
+import { Steps, Step } from "fumadocs-ui/components/steps";
+
+Skills are context files that give your AI coding assistant knowledge of Shelf UI's component APIs, install commands, and composition patterns. With a skill installed, your assistant knows how to find the right component, add it to your project, and compose it correctly — without hallucinating props or making up import paths.
+
+## What you can ask
+
+Once installed, prompt your assistant naturally:
+
+> *"Add a drag-and-drop file upload zone that accepts images only and shows a preview grid."*
+
+> *"Build a file manager with a tree sidebar, breadcrumb navigation, and a grid view."*
+
+> *"Show me how to connect the Dropzone to Supabase Storage."*
+
+The skill gives your assistant the exact component APIs and shadcn registry commands, so it generates working code on the first try.
+
+## Supported editors
+
+<Cards>
+  <Card title="Cursor" description="Rules file or MDC skill" href="#cursor" />
+  <Card title="Claude Code" description="CLAUDE.md context file" href="#claude-code" />
+  <Card title="Windsurf" description="Cascade config" href="#windsurf" />
+  <Card title="GitHub Copilot" description="Copilot instructions" href="#github-copilot" />
+</Cards>
+
+## Install
+
+<Tabs items={["Cursor", "Claude Code", "Windsurf", "GitHub Copilot"]}>
+  <Tab value="Cursor">
+    ### Cursor
+
+    Add Shelf UI as a documentation source in Cursor's settings so it can be indexed and referenced inline.
+
+    <Steps>
+      <Step>
+        Open **Cursor Settings** → **Features** → **Docs**
+      </Step>
+      <Step>
+        Click **Add new doc** and enter:
+        ```
+        https://shelfui.dev/llms-full.txt
+        ```
+      </Step>
+      <Step>
+        Cursor will index the full Shelf UI documentation. Use `@shelf-ui` in any prompt to scope your question to Shelf UI.
+      </Step>
+    </Steps>
+
+    **Alternative: Rules file**
+
+    Add the skill file directly to your `.cursorrules` or a `.cursor/rules/*.mdc` file:
+
+    ```bash title="terminal"
+    curl -o .cursor/rules/shelf-ui.mdc https://shelfui.dev/skills/shelf-ui.md
+    ```
+
+    The rule will be applied automatically to every Cursor conversation in your project.
+  </Tab>
+  <Tab value="Claude Code">
+    ### Claude Code
+
+    <Steps>
+      <Step>
+        In your project root, create or open `CLAUDE.md`
+      </Step>
+      <Step>
+        Add an import reference to the Shelf UI skill:
+        ```markdown title="CLAUDE.md"
+        ## UI Components
+
+        This project uses Shelf UI for file-related components.
+
+        @https://shelfui.dev/skills/shelf-ui.md
+        ```
+      </Step>
+      <Step>
+        Claude Code will automatically load the skill on every session in this project.
+      </Step>
+    </Steps>
+
+    <Callout type="tip">
+      You can also paste the raw skill content directly into `CLAUDE.md` if you prefer to version-control it without an external reference.
+    </Callout>
+  </Tab>
+  <Tab value="Windsurf">
+    ### Windsurf
+
+    <Steps>
+      <Step>
+        Open **Windsurf Settings** → **Cascade** → **Knowledge**
+      </Step>
+      <Step>
+        Add a new knowledge entry with source URL:
+        ```
+        https://shelfui.dev/llms-full.txt
+        ```
+      </Step>
+      <Step>
+        Cascade will index Shelf UI and apply it automatically to relevant conversations.
+      </Step>
+    </Steps>
+
+    **Alternative: Global rules**
+
+    ```bash title="terminal"
+    curl -o ~/.codeium/windsurf/memories/shelf-ui.md https://shelfui.dev/skills/shelf-ui.md
+    ```
+  </Tab>
+  <Tab value="GitHub Copilot">
+    ### GitHub Copilot
+
+    <Steps>
+      <Step>
+        In your repo root, create `.github/copilot-instructions.md` if it doesn't exist
+      </Step>
+      <Step>
+        Add the Shelf UI context:
+        ```markdown title=".github/copilot-instructions.md"
+        ## File UI Components
+
+        This project uses Shelf UI. Component docs and registry:
+        https://shelfui.dev/llms.txt
+        ```
+      </Step>
+      <Step>
+        Copilot will use this as workspace context in all conversations.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## What the skill contains
+
+The skill file at `/skills/shelf-ui.md` (repo root) includes:
+
+- **Full component list** — every component name, category, and one-line description
+- **Install commands** — shadcn CLI commands for npm, pnpm, yarn, and bun
+- **Prop reference** — key props for every component with types and defaults
+- **Composition patterns** — how to combine components (e.g., Dropzone + UploadQueue + StorageQuota)
+- **Hook APIs** — `useFileUpload`, `useUploadQueue`, `useFileTree`, `useStorageProvider`
+- **Storage adapter setup** — Supabase, S3, and Cloudinary config snippets
+
+## Raw skill file
+
+The machine-readable skill file is available at:
+
+- **GitHub**: [`/skills/shelf-ui/shelf-ui.md`](https://github.com/Kendrick-Oppong/shelf-ui/blob/main/skills/shelf-ui/shelf-ui.md)
+- **Direct URL**: `https://shelfui.dev/skills/shelf-ui.md`
+
+You can reference it in any AI tool that supports URL-based knowledge sources.

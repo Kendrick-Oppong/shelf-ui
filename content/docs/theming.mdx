@@ -1,124 +1,235 @@
 ---
 title: Theming
-description: Customize the look and feel of Shelf UI components.
+description: How Shelf UI's CSS variable system works — token reference, light/dark modes, and how to customize every token to match your brand.
 ---
 
-## Theme System
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
-Shelf UI uses CSS variables for theming, making it easy to customize colors, spacing, and typography across all components.
+Shelf UI uses CSS custom properties (CSS variables) for all visual tokens. Every component reads from the same token set — override a token once in your `globals.css` and it propagates to every component automatically.
 
-## Color Palette
+This is the same system used by shadcn/ui. If you've already customized shadcn tokens, most of your work is done.
 
-### Light Mode
+## How it works
 
-```css
+Tokens are defined in `globals.css` under `:root` (light mode) and `.dark` (dark mode). Tailwind v4 maps them to utility classes via `@theme`:
+
+```css title="globals.css (simplified)"
 :root {
   --background: #f4f4f5;
   --foreground: #09090b;
   --primary: #b45309;
-  --primary-foreground: #ffffff;
-  --muted: #e4e4e7;
-  --muted-foreground: #747477;
-  --border: #d4d4d8;
 }
-```
 
-### Dark Mode
-
-```css
 .dark {
   --background: #07070a;
   --foreground: #eeedf5;
   --primary: #f0b429;
-  --primary-foreground: #07070a;
-  --muted: #18181f;
-  --muted-foreground: #99999e;
-  --border: rgba(255, 255, 255, 0.06);
 }
 ```
 
-<Callout type="info" title="Automatic Dark Mode">
-  Shelf UI automatically adapts to dark mode using the `.dark` class on your `<html>` element.
-</Callout>
+Tailwind then exposes them as `bg-background`, `text-foreground`, `text-primary`, etc.
 
-## Typography
+## Token reference
 
-### Font Families
+### Colors
 
-```css
+<Tabs items={["Light", "Dark"]}>
+  <Tab value="Light">
+    | Token | Value | Usage |
+    | --- | --- | --- |
+    | `--background` | `#f4f4f5` | Page background |
+    | `--foreground` | `#09090b` | Default text |
+    | `--card` | `#ffffff` | Card surfaces |
+    | `--card-foreground` | `#09090b` | Text on cards |
+    | `--popover` | `#ffffff` | Popovers, dropdowns |
+    | `--popover-foreground` | `#09090b` | Text in popovers |
+    | `--primary` | `#b45309` | Brand color, CTAs |
+    | `--primary-foreground` | `#ffffff` | Text on primary |
+    | `--secondary` | `#f4f4f5` | Secondary surfaces |
+    | `--secondary-foreground` | `#09090b` | Text on secondary |
+    | `--muted` | `#f4f4f5` | Subtle backgrounds |
+    | `--muted-foreground` | `#747477` | De-emphasized text |
+    | `--accent` | `#e4e4e7` | Hover states |
+    | `--accent-foreground` | `#09090b` | Text on accent |
+    | `--destructive` | `#ef4444` | Error states |
+    | `--border` | `rgba(0,0,0,0.08)` | Default borders |
+    | `--input` | `rgba(0,0,0,0.1)` | Input borders |
+    | `--ring` | `#b45309` | Focus rings |
+  </Tab>
+  <Tab value="Dark">
+    | Token | Value | Usage |
+    | --- | --- | --- |
+    | `--background` | `#07070a` | Page background |
+    | `--foreground` | `#eeedf5` | Default text |
+    | `--card` | `#111118` | Card surfaces |
+    | `--card-foreground` | `#eeedf5` | Text on cards |
+    | `--popover` | `#111118` | Popovers, dropdowns |
+    | `--popover-foreground` | `#eeedf5` | Text in popovers |
+    | `--primary` | `#f0b429` | Brand color, CTAs |
+    | `--primary-foreground` | `#07070a` | Text on primary |
+    | `--secondary` | `#1c1c26` | Secondary surfaces |
+    | `--secondary-foreground` | `#eeedf5` | Text on secondary |
+    | `--muted` | `#18181f` | Subtle backgrounds |
+    | `--muted-foreground` | `#99999e` | De-emphasized text |
+    | `--accent` | `#1c1c26` | Hover states |
+    | `--accent-foreground` | `#eeedf5` | Text on accent |
+    | `--destructive` | `#f87171` | Error states |
+    | `--border` | `rgba(255,255,255,0.06)` | Default borders |
+    | `--input` | `rgba(255,255,255,0.08)` | Input borders |
+    | `--ring` | `#f0b429` | Focus rings |
+  </Tab>
+</Tabs>
+
+### Typography
+
+| Token | Value | Usage |
+| --- | --- | --- |
+| `--font-sans` | `"Bai Jamjuree", sans-serif` | Body text, UI labels |
+| `--font-mono` | `"Courier Prime", monospace` | Code blocks |
+
+### Border radius
+
+| Token | Value |
+| --- | --- |
+| `--radius` | `0.625rem` (10px) — base radius |
+| `--radius-sm` | `calc(var(--radius) - 4px)` |
+| `--radius-md` | `calc(var(--radius) - 2px)` |
+| `--radius-lg` | `var(--radius)` |
+| `--radius-xl` | `calc(var(--radius) + 4px)` |
+
+### Shadows
+
+| Token | Value |
+| --- | --- |
+| `--shadow-sm` | `0px 2px 6px 0px hsl(0 0% 0% / 0.09)` |
+| `--shadow` | `0px 4px 10px 0px hsl(0 0% 0% / 0.1)` |
+| `--shadow-lg` | `0px 8px 20px 0px hsl(0 0% 0% / 0.12)` |
+
+## Overriding tokens
+
+### Change the primary brand color
+
+The most common customization. Override `--primary` and `--primary-foreground` in both modes:
+
+```css title="globals.css"
 :root {
-  --font-sans: "Bai Jamjuree", sans-serif;
-  --font-mono: "Courier Prime", "Consolas", monospace;
-}
-```
-
-### Font Sizes
-
-We use a fluid type scale:
-
-- **Headings**: `clamp(2rem, 5vw, 4rem)`
-- **Body**: `1rem` (16px)
-- **Small**: `0.875rem` (14px)
-- **Tiny**: `0.75rem` (12px)
-
-## Border Radius
-
-Control roundness across all components:
-
-```css
-:root {
-  --radius: 0.625rem; /* 10px */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
-```
-
-## Shadows
-
-We provide a comprehensive shadow system:
-
-```css
-:root {
-  --shadow-sm: 0px 2px 6px 0px hsl(0 0% 0% / 0.09);
-  --shadow: 0px 4px 10px 0px hsl(0 0% 0% / 0.1);
-  --shadow-lg: 0px 8px 20px 0px hsl(0 0% 0% / 0.12);
-}
-```
-
-## Customization Examples
-
-### Brand Colors
-
-Override the primary color:
-
-```css
-:root {
-  --primary: #3b82f6; /* Blue */
+  --primary: #2563eb;           /* your brand blue */
   --primary-foreground: #ffffff;
 }
 
 .dark {
-  --primary: #60a5fa; /* Lighter blue for dark mode */
+  --primary: #60a5fa;           /* lighter for dark mode */
+  --primary-foreground: #0f172a;
 }
 ```
 
-### Custom Component
+This propagates to every button, badge, focus ring, and active state across all Shelf UI components automatically.
 
-Create a custom variant:
+### Change the font
 
-```tsx
-import { cva } from "class-variance-authority"
+Swap in any Google Font:
 
-const buttonVariants = cva("base-button", {
-  variants: {
-    variant: {
-      custom: "bg-gradient-to-r from-purple-500 to-pink-500"
-    }
-  }
-})
+```css title="globals.css"
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-sans: "Inter", sans-serif;
+}
 ```
 
-<Callout type="success" title="Theme Preview">
-  Use the theme toggle in the header to preview light and dark modes.
+Or use a Next.js font (recommended for performance):
+
+```tsx title="app/layout.tsx"
+import { Inter } from "next/font/google";
+
+const fontSans = Inter({ subsets: ["latin"], variable: "--font-sans" });
+```
+
+### Change the border radius
+
+For a sharper, more geometric look:
+
+```css title="globals.css"
+:root {
+  --radius: 0.25rem; /* 4px — very sharp */
+}
+```
+
+For a more rounded, softer look:
+
+```css title="globals.css"
+:root {
+  --radius: 1rem; /* 16px — very rounded */
+}
+```
+
+## Full token block
+
+Copy this into your `globals.css` if you want to start from scratch:
+
+```css title="globals.css"
+:root {
+  --background: #f4f4f5;
+  --foreground: #09090b;
+  --card: #ffffff;
+  --card-foreground: #09090b;
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+  --primary: #b45309;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f5;
+  --secondary-foreground: #09090b;
+  --muted: #f4f4f5;
+  --muted-foreground: #747477;
+  --accent: #e4e4e7;
+  --accent-foreground: #09090b;
+  --destructive: #ef4444;
+  --border: rgba(0, 0, 0, 0.08);
+  --input: rgba(0, 0, 0, 0.1);
+  --ring: #b45309;
+  --radius: 0.625rem;
+  --font-sans: "Bai Jamjuree", sans-serif;
+  --font-mono: "Courier Prime", monospace;
+}
+
+.dark {
+  --background: #07070a;
+  --foreground: #eeedf5;
+  --card: #111118;
+  --card-foreground: #eeedf5;
+  --popover: #111118;
+  --popover-foreground: #eeedf5;
+  --primary: #f0b429;
+  --primary-foreground: #07070a;
+  --secondary: #1c1c26;
+  --secondary-foreground: #eeedf5;
+  --muted: #18181f;
+  --muted-foreground: #99999e;
+  --accent: #1c1c26;
+  --accent-foreground: #eeedf5;
+  --destructive: #f87171;
+  --border: rgba(255, 255, 255, 0.06);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #f0b429;
+}
+```
+
+<Callout type="tip">
+  Use the [shadcn theme generator](https://ui.shadcn.com/themes) to produce a compatible token set — then paste the output into your `globals.css`. All Shelf UI components will pick it up automatically.
 </Callout>
+
+## FAQ
+
+<Accordions type="single">
+  <Accordion title="Do Shelf UI tokens conflict with shadcn/ui tokens?">
+    No. Shelf UI uses the same token names as shadcn/ui by design. If you already have shadcn tokens set up, Shelf UI components will inherit them automatically.
+  </Accordion>
+  <Accordion title="Can I add my own tokens?">
+    Yes. Add any custom token to `:root` and reference it in your component with `var(--your-token)`. Shelf UI components will not conflict with custom tokens.
+  </Accordion>
+  <Accordion title="Why not use Tailwind config colors instead?">
+    CSS variables are theme-aware by default — they switch between light and dark mode without any JavaScript. Tailwind config colors require `dark:` variants everywhere. The CSS variable approach is strictly simpler.
+  </Accordion>
+</Accordions>

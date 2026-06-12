@@ -12,7 +12,9 @@ export function getMDXComponents(components?: MDXComponents) {
     // HTML `ref` attribute conflicts with `forwardRef`
     pre: ({ ref: _ref, ...props }) => (
       <CodeBlock keepBackground {...props}>
-        <Pre>{props.children}</Pre>
+        <Pre className="font-sans! text-[13px] leading-relaxed">
+          {props.children}
+        </Pre>
       </CodeBlock>
     ),
     Badge,
