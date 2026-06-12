@@ -1,0 +1,4 @@
+{
+  "title": "Upload",
+  "pages": ["dropzone", "file-input", "file-card"]
+}
