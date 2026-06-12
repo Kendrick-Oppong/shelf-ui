@@ -1,0 +1,12 @@
+{
+  "title": "Getting Started",
+  "pages": [
+    "index",
+    "installation",
+    "primitives",
+    "theming",
+    "skills",
+    "mcp",
+    "llms"
+  ]
+}

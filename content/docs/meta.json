@@ -1,12 +1,4 @@
 {
   "title": "Documentation",
-  "pages": [
-    "index",
-    "installation",
-    "primitives",
-    "theming",
-    "skills",
-    "mcp",
-    "llms"
-  ]
+  "pages": ["getting-started", "uploads", "adapters"]
 }

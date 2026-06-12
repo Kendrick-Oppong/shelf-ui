@@ -1,0 +1,122 @@
+---
+title: MCP Server
+description: Connect Shelf UI to AI assistants via the Model Context Protocol — so your assistant can query components, generate install commands, and browse the registry directly.
+badge: Soon
+---
+
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Callout type="info" title="Not yet on NPM">
+  The `@shelf-ui/mcp` package is built and ready, but has not been published to
+  NPM yet. It will be available once the first components are registered. In the
+  meantime, use the [Skills](/docs/skills) page to give your AI assistant Shelf
+  UI context today.
+</Callout>
+
+The Shelf UI MCP (Model Context Protocol) server exposes the component registry as structured, queryable tools. Once connected, your AI assistant can browse components, get install commands, and read prop documentation without leaving your editor.
+
+**MCP is a universal open standard** — it works with any AI assistant that supports it, including GitHub Copilot, Cursor, Windsurf, Claude Desktop, and Antigravity.
+
+## What the server exposes
+
+| Tool                  | Description                                                              |
+| --------------------- | ------------------------------------------------------------------------ |
+| `search_components`   | Search the Shelf UI registry by name or keyword                          |
+| `get_component`       | Get the full JSON schema for a specific component                        |
+| `get_install_command` | Generate the correct shadcn CLI command for a component and package manager |
+| `list_adapters`       | List available storage adapters                                          |
+
+## Connecting your AI assistant
+
+Once published, add the following to your AI assistant's MCP config. No API key required — the server reads from the public Shelf UI registry at `https://shelfui.dev/r`.
+
+<Tabs items={["Claude Desktop", "Cursor", "Windsurf", "Other"]}>
+  <Tab value="Claude Desktop">
+    Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+    ```json
+    {
+      "mcpServers": {
+        "shelf-ui": {
+          "command": "npx",
+          "args": ["-y", "@shelf-ui/mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Cursor">
+    Add to `.cursor/mcp.json` in your project root:
+
+    ```json
+    {
+      "mcpServers": {
+        "shelf-ui": {
+          "command": "npx",
+          "args": ["-y", "@shelf-ui/mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Windsurf">
+    Add to `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "shelf-ui": {
+          "command": "npx",
+          "args": ["-y", "@shelf-ui/mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Other">
+    Any MCP-compatible client can connect using:
+
+    ```json
+    {
+      "mcpServers": {
+        "shelf-ui": {
+          "command": "npx",
+          "args": ["-y", "@shelf-ui/mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Supported package managers
+
+The `get_install_command` tool generates the correct command for your package manager:
+
+| Package Manager | Command format                                      |
+| --------------- | --------------------------------------------------- |
+| npm             | `npx shadcn@latest add https://shelfui.dev/r/[name].json`   |
+| pnpm            | `pnpm dlx shadcn@latest add https://shelfui.dev/r/[name].json` |
+| yarn            | `yarn dlx shadcn@latest add https://shelfui.dev/r/[name].json` |
+| bun             | `bunx shadcn@latest add https://shelfui.dev/r/[name].json`  |
+
+## Example tool calls
+
+When connected, you can ask your assistant natural language questions:
+
+> *"What file upload components does Shelf UI have?"*
+
+The assistant will call `search_components({ query: "upload" })` and return a structured list with descriptions.
+
+> *"How do I install the Dropzone component with pnpm?"*
+
+The assistant will call `get_install_command({ name: "dropzone", packageManager: "pnpm" })` and return the exact command.
+
+> *"What storage adapters does Shelf UI support?"*
+
+The assistant will call `list_adapters` and return a list of all supported backends (Firebase Storage, Supabase, AWS S3, Cloudinary, Azure Blob, ImageKit, Uploadthing).
+
+## In the meantime
+
+While the MCP server is awaiting publication, use the [Skills](/docs/skills) page to give your AI assistant full Shelf UI context via a file-based approach that works today with Cursor, Claude Code, Windsurf, Antigravity, and GitHub Copilot.

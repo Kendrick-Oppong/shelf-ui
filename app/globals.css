@@ -357,7 +357,8 @@
 
 @layer utilities {
   /* entire docs  */
-  #nd-notebook-layout {
+  #nd-notebook-layout,
+  #nd-page {
     @apply mx-auto;
   }
   /* sidebar & header */
@@ -382,6 +383,9 @@
   }
 
   /* mdx customization */
+  .prose {
+    @apply w-full!;
+  }
   .prose p {
     @apply my-3!;
   }
