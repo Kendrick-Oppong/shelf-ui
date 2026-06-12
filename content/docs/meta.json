@@ -1,6 +1,6 @@
 {
-  "title": "Documentation",
   "pages": [
+    "---Getting Started---",
     "index",
     "installation",
     "primitives",
