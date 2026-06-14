@@ -1,9 +1,10 @@
 import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
-// biome-ignore lint/performance/noNamespaceImport: <explanation>
+// biome-ignore lint/performance/noNamespaceImport: Fumadocs exposes tabs as a namespace
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
+import { DemoWithCode } from "@/components/docs/demo-with-code";
 import { Badge } from "@/components/ui/badge";
 
 export function getMDXComponents(components?: MDXComponents) {
@@ -32,6 +33,7 @@ export function getMDXComponents(components?: MDXComponents) {
       }
       return <File {...props} />;
     },
+    DemoWithCode,
     ...TabsComponents,
     ...components,
   } satisfies MDXComponents;
