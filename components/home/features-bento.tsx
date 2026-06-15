@@ -25,7 +25,7 @@ const FEATURES = [
     num: "04",
     Icon: Zap,
     title: "Radix UI or Base UI.",
-    body: "Pick your primitive at install time. Identical component API regardless — only internals differ. Switch with zero migration cost.",
+    body: "Shelf UI adapts to your existing component foundation, whether your project is built on Radix UI or Base UI. Consistent APIs, no unnecessary rewrites.",
   },
   {
     num: "05",
