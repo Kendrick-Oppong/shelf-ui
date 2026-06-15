@@ -2,8 +2,7 @@
 
 <div align="center">
 
-<!-- Replace with screenshot once site is live -->
-<!-- ![Shelf UI Hero](https://shelf-ui.vercel.app/og.png) -->
+![Shelf UI Hero](https://shelf-ui.vercel.app/opengraph-image)
 
 **The file UI library your app deserves.**
 
