@@ -13,8 +13,8 @@ Machine-readable documentation for LLMs:
 
 | Resource | URL |
 | --- | --- |
-| llms.txt | `https://shelfui.dev/llms.txt` |
-| llms-full.txt | `https://shelfui.dev/llms-full.txt` |
+| llms.txt | `https://shelf-ui.vercel.app/llms.txt` |
+| llms-full.txt | `https://shelf-ui.vercel.app/llms-full.txt` |
 
 Shelf UI publishes machine-readable documentation endpoints following the [llms.txt convention](https://llmstxt.org). These let AI tools index our full documentation so they understand component APIs, install patterns, and composition rules — without hallucinating.
 
@@ -22,8 +22,8 @@ Shelf UI publishes machine-readable documentation endpoints following the [llms.
 
 | Endpoint | Description |
 | --- | --- |
-| [`/llms.txt`](https://shelfui.dev/llms.txt) | Compact index — component list, install commands, links to full docs |
-| [`/llms-full.txt`](https://shelfui.dev/llms-full.txt) | Full documentation in a single file — complete prop reference and examples |
+| [`/llms.txt`](https://shelf-ui.vercel.app/llms.txt) | Compact index — component list, install commands, links to full docs |
+| [`/llms-full.txt`](https://shelf-ui.vercel.app/llms-full.txt) | Full documentation in a single file — complete prop reference and examples |
 
 Both are plain text, no authentication required, updated automatically on every docs deploy.
 
@@ -37,7 +37,7 @@ Both are plain text, no authentication required, updated automatically on every 
 
     1. Open **Cursor Settings** → **Features** → **Docs**
     2. Click **Add new doc**
-    3. Enter `https://shelfui.dev/llms-full.txt`
+    3. Enter `https://shelf-ui.vercel.app/llms-full.txt`
 
     Use `@shelf-ui` in any prompt to reference it directly.
   </Tab>
@@ -48,7 +48,7 @@ Both are plain text, no authentication required, updated automatically on every 
 
     1. Open your Claude project
     2. Click **Add content** → **URL**
-    3. Enter `https://shelfui.dev/llms.txt`
+    3. Enter `https://shelf-ui.vercel.app/llms.txt`
 
     Claude will index the component list and reference it in your conversations.
 
@@ -62,7 +62,7 @@ Both are plain text, no authentication required, updated automatically on every 
     Add to Cascade's knowledge base:
 
     1. Open **Windsurf Settings** → **Cascade** → **Knowledge**
-    2. Add source URL: `https://shelfui.dev/llms-full.txt`
+    2. Add source URL: `https://shelf-ui.vercel.app/llms-full.txt`
 
     Cascade will index it and apply it automatically to relevant conversations.
   </Tab>
@@ -72,7 +72,7 @@ Both are plain text, no authentication required, updated automatically on every 
     Paste the URL directly in a Perplexity prompt:
 
     ```text
-    Read https://shelfui.dev/llms.txt and then answer:
+    Read https://shelf-ui.vercel.app/llms.txt and then answer:
     how do I add a file upload component to my Next.js app?
     ```
 
@@ -91,13 +91,13 @@ The `/llms.txt` file follows the [llmstxt.org spec](https://llmstxt.org):
 > A shadcn-style file UI component library. Copy-paste components for the complete file experience.
 
 ## Getting Started
-- [Introduction](https://shelfui.dev/docs): What Shelf UI is and why it exists
-- [Installation](https://shelfui.dev/docs/installation): How to add components to your project
-- [Primitives](https://shelfui.dev/docs/primitives): Choosing between Radix UI and Base UI
+- [Introduction](https://shelf-ui.vercel.app/docs): What Shelf UI is and why it exists
+- [Installation](https://shelf-ui.vercel.app/docs/installation): How to add components to your project
+- [Primitives](https://shelf-ui.vercel.app/docs/primitives): Choosing between Radix UI and Base UI
 
 ## Components
-- [Dropzone](https://shelfui.dev/docs/components/dropzone): Drag and drop file upload area
-- [FileCard](https://shelfui.dev/docs/components/file-card): Smart preview card per file type
+- [Dropzone](https://shelf-ui.vercel.app/docs/components/dropzone): Drag and drop file upload area
+- [FileCard](https://shelf-ui.vercel.app/docs/components/file-card): Smart preview card per file type
 ...
 ```
 

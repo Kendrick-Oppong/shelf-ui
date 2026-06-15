@@ -29,7 +29,7 @@ The Shelf UI MCP (Model Context Protocol) server exposes the component registry 
 
 ## Connecting your AI assistant
 
-Once published, add the following to your AI assistant's MCP config. No API key required — the server reads from the public Shelf UI registry at `https://shelfui.dev/r`.
+Once published, add the following to your AI assistant's MCP config. No API key required — the server reads from the public Shelf UI registry at `https://shelf-ui.vercel.app/r`.
 
 <Tabs items={["Claude Desktop", "Cursor", "Windsurf", "Other"]}>
   <Tab value="Claude Desktop">
@@ -96,10 +96,10 @@ The `get_install_command` tool generates the correct command for your package ma
 
 | Package Manager | Command format                                      |
 | --------------- | --------------------------------------------------- |
-| npm             | `npx shadcn@latest add https://shelfui.dev/r/[name].json`   |
-| pnpm            | `pnpm dlx shadcn@latest add https://shelfui.dev/r/[name].json` |
-| yarn            | `yarn dlx shadcn@latest add https://shelfui.dev/r/[name].json` |
-| bun             | `bunx shadcn@latest add https://shelfui.dev/r/[name].json`  |
+| npm             | `npx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json`   |
+| pnpm            | `pnpm dlx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json` |
+| yarn            | `yarn dlx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json` |
+| bun             | `bunx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json`  |
 
 ## Example tool calls
 
