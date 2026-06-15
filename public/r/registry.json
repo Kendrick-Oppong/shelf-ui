@@ -6,7 +6,10 @@
     {
       "name": "dropzone",
       "type": "registry:ui",
-      "dependencies": ["lucide-react", "react-dropzone"],
+      "dependencies": [
+        "lucide-react",
+        "react-dropzone"
+      ],
       "files": [
         {
           "path": "registry/dropzone.tsx",
