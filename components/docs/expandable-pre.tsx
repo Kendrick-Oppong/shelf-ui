@@ -3,7 +3,7 @@
 import { Pre } from "fumadocs-ui/components/codeblock";
 import {
   type ComponentPropsWithoutRef,
-  useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -23,12 +23,19 @@ export function ExpandablePre({
 
   const MAX_HEIGHT = 160; // Max height in pixels before showing "Show More"
 
-  useEffect(() => {
-    if (preRef.current) {
-      setIsCollapsible(preRef.current.scrollHeight > MAX_HEIGHT);
+  useLayoutEffect(() => {
+    if (!preRef.current) {
+      return;
     }
-  }, [children]);
 
+    const el = preRef.current;
+
+    const check = () => {
+      setIsCollapsible(el.scrollHeight > MAX_HEIGHT);
+    };
+
+    check();
+  }, []);
   return (
     <div className="relative w-full">
       <Pre
