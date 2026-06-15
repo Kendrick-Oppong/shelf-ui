@@ -86,7 +86,7 @@ try {
   run("npx", ["shadcn", "build"]);
   console.log("✅ Registry outputs generated in public/r");
 
-  // Normalise JSON formatting to prevent spurious diffs
+  // Normalise JSON formatting with 2 spaces + trailing newline
   if (existsSync(publicRDir)) {
     const files = readdirSync(publicRDir);
     for (const file of files) {
@@ -94,15 +94,20 @@ try {
         const filePath = join(publicRDir, file);
         try {
           const content = JSON.parse(readFileSync(filePath, "utf-8"));
-          // Use template literal to append newline (avoid string concatenation)
           writeFileSync(filePath, `${JSON.stringify(content, null, 2)}\n`);
         } catch (err) {
           console.error(`Failed to normalise JSON for ${file}:`, err);
         }
       }
     }
-    console.log("✅ Normalised JSON formatting in public/r");
+    console.log("✅ Normalised JSON formatting (multi‑line arrays)");
   }
+
+  console.log("🎨 Running formatter on public/r...");
+  run("pnpm", ["exec", "ultracite", "fix", publicRDir]);
+  console.log(
+    "✅ Formatter applied – JSON now matches project style (single‑line arrays)"
+  );
 } finally {
   removeIfExists(registryStagingDir);
 }
