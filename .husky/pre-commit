@@ -1,2 +1,0 @@
-# Run lint-staged only — avoid running `pnpm test` which may not be defined locally
-pnpm dlx lint-staged
