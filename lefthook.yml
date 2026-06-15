@@ -1,8 +1,8 @@
 pre-commit:
   jobs:
+    - run: pnpm run lint:registry
     - run: pnpm dlx ultracite fix {staged_files}
       stage_fixed: true
-    - run: pnpm run lint:registry
 
 pre-push:
   jobs:
