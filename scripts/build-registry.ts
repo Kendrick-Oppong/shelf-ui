@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -77,6 +85,24 @@ for (const item of registry.items ?? []) {
 try {
   run("npx", ["shadcn", "build"]);
   console.log("✅ Registry outputs generated in public/r");
+
+  // Normalise JSON formatting to prevent spurious diffs
+  if (existsSync(publicRDir)) {
+    const files = readdirSync(publicRDir);
+    for (const file of files) {
+      if (file.endsWith(".json")) {
+        const filePath = join(publicRDir, file);
+        try {
+          const content = JSON.parse(readFileSync(filePath, "utf-8"));
+          // Use template literal to append newline (avoid string concatenation)
+          writeFileSync(filePath, `${JSON.stringify(content, null, 2)}\n`);
+        } catch (err) {
+          console.error(`Failed to normalise JSON for ${file}:`, err);
+        }
+      }
+    }
+    console.log("✅ Normalised JSON formatting in public/r");
+  }
 } finally {
   removeIfExists(registryStagingDir);
 }

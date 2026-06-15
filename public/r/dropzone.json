@@ -1,10 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry-item.json",
   "name": "dropzone",
-  "dependencies": [
-    "lucide-react",
-    "react-dropzone"
-  ],
+  "dependencies": ["lucide-react", "react-dropzone"],
   "files": [
     {
       "path": "registry/dropzone.tsx",
