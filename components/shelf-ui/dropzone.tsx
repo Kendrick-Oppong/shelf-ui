@@ -314,9 +314,6 @@ export function useDropzone<TResult = any, TError = any>({
         uploadFile(id, file);
       }
     },
-    // fileStatuses read via ref – excluded intentionally.
-    // biome-ignore lint/correctness/useExhaustiveDependencies: fileStatuses read via ref
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [validation, shiftOnMaxFiles, onRootError, uploadFile]
   );
 

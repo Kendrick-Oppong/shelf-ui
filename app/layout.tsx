@@ -81,7 +81,7 @@ export default function RootLayout({
         </ThemeProvider>
 
         <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: dangerouslySetInnerHTML is fine here
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(JSON_LD_SCHEMA),
           }}
