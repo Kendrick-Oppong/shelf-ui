@@ -49,7 +49,7 @@ Add the Shelf UI registry to your `components.json`:
 ```json title="components.json"
 {
   "registries": {
-    "@shelf-ui": "https://shelfui.dev/r/{name}.json"
+    "@shelf-ui": "https://shelf-ui.vercel.app/r/{name}.json"
   }
 }
 ```
@@ -83,34 +83,6 @@ bunx shadcn@latest add @shelf-ui/dropzone
   </Tab>
 </Tabs>
 
-### Motion animations (Optional)
-
-Shelf UI components support enhanced, physics-based micro-interactions via Framer Motion. By default, components install using zero-runtime CSS transitions.
-
-To opt into Framer Motion for advanced drag-interactions and springs, append the `--motion` flag to your install command:
-
-<Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
-  <Tab value="npm">
-```bash title="terminal"
-npx shadcn@latest add @shelf-ui/dropzone --motion
-```
-  </Tab>
-  <Tab value="pnpm">
-```bash title="terminal"
-pnpm dlx shadcn@latest add @shelf-ui/dropzone --motion
-```
-  </Tab>
-  <Tab value="yarn">
-```bash title="terminal"
-yarn dlx shadcn@latest add @shelf-ui/dropzone --motion
-```
-  </Tab>
-  <Tab value="bun">
-```bash title="terminal"
-bunx shadcn@latest add @shelf-ui/dropzone --motion
-```
-  </Tab>
-</Tabs>
 
 ### Option 2: Direct URL
 
@@ -119,22 +91,22 @@ Add components by passing the registry URL directly:
 <Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
   <Tab value="npm">
 ```bash title="terminal"
-npx shadcn@latest add https://shelfui.dev/r/dropzone.json
+npx shadcn@latest add https://shelf-ui.vercel.app/r/dropzone.json
 ```
   </Tab>
   <Tab value="pnpm">
 ```bash title="terminal"
-pnpm dlx shadcn@latest add https://shelfui.dev/r/dropzone.json
+pnpm dlx shadcn@latest add https://shelf-ui.vercel.app/r/dropzone.json
 ```
   </Tab>
   <Tab value="yarn">
 ```bash title="terminal"
-yarn dlx shadcn@latest add https://shelfui.dev/r/dropzone.json
+yarn dlx shadcn@latest add https://shelf-ui.vercel.app/r/dropzone.json
 ```
   </Tab>
   <Tab value="bun">
 ```bash title="terminal"
-bunx shadcn@latest add https://shelfui.dev/r/dropzone.json
+bunx shadcn@latest add https://shelf-ui.vercel.app/r/dropzone.json
 ```
   </Tab>
 </Tabs>

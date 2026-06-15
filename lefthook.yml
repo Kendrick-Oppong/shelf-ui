@@ -1,13 +1,13 @@
 pre-commit:
   jobs:
-    - run: pnpm dlx ultracite fix
-      glob:
-        - "**/*.js"
-        - "**/*.jsx"
-        - "**/*.ts"
-        - "**/*.tsx"
-        - "**/*.json"
-        - "**/*.jsonc"
-        - "**/*.css"
-      stage_fixed: true
     - run: pnpm run lint:registry
+    - run: pnpm dlx ultracite fix {staged_files}
+      stage_fixed: true
+
+pre-push:
+  jobs:
+    - run: pnpm run build
+
+commit-msg:
+  jobs:
+    - run: pnpm dlx commitlint --edit {1}

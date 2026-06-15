@@ -8,7 +8,7 @@
 - Every interactive component has two implementations: **Radix UI** and **Base UI** — the API is identical for both
 - Every component ships with its underlying **headless hook** — use it to build fully custom UIs
 - Uses **CSS custom properties** for all theming — same tokens as shadcn/ui
-- Registry URL pattern: `https://shelfui.dev/r/{component-name}.json`
+- Registry URL pattern: `https://shelf-ui.vercel.app/r/{component-name}.json`
 
 ## Install a component
 
@@ -201,6 +201,6 @@ export function FileManager({ files }) {
 
 ## Docs
 
-Full documentation: https://shelfui.dev/docs  
-Registry: https://shelfui.dev/r  
+Full documentation: https://shelf-ui.vercel.app/docs  
+Registry: https://shelf-ui.vercel.app/r  
 GitHub: https://github.com/Kendrick-Oppong/shelf-ui

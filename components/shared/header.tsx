@@ -21,6 +21,7 @@ export function Header() {
   const pathname = usePathname();
 
   // Close on route change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: close menu on route change
   useEffect(() => {
     setOpen(false);
   }, [pathname]);

@@ -3,7 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
-const REGISTRY_URL = "https://shelfui.dev/r";
+const REGISTRY_URL = "https://shelf-ui.vercel.app/r";
 
 const server = new McpServer({
   name: "Shelf UI",

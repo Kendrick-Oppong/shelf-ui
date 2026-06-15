@@ -1,20 +1,27 @@
-import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
+import { CodeBlock } from "fumadocs-ui/components/codeblock";
 import { File, Files, Folder } from "fumadocs-ui/components/files";
-// biome-ignore lint/performance/noNamespaceImport: <explanation>
+// biome-ignore lint/performance/noNamespaceImport: Fumadocs exposes tabs as a namespace
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
+import type { HTMLAttributes } from "react";
+import { DemoWithCode } from "@/components/docs/demo-with-code";
+import { ExpandablePre } from "@/components/docs/expandable-pre";
 import { Badge } from "@/components/ui/badge";
+
+interface MdxPreProps extends HTMLAttributes<HTMLPreElement> {
+  allowCopy?: boolean;
+  custom?: string;
+  keepBackground?: boolean;
+}
 
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
     // HTML `ref` attribute conflicts with `forwardRef`
-    pre: ({ ref: _ref, ...props }) => (
+    pre: ({ ref: _ref, ...props }: MdxPreProps & { ref?: unknown }) => (
       <CodeBlock keepBackground {...props}>
-        <Pre className="font-sans! text-[13px] leading-relaxed">
-          {props.children}
-        </Pre>
+        <ExpandablePre {...props}>{props.children}</ExpandablePre>
       </CodeBlock>
     ),
     Badge,
@@ -32,6 +39,7 @@ export function getMDXComponents(components?: MDXComponents) {
       }
       return <File {...props} />;
     },
+    DemoWithCode,
     ...TabsComponents,
     ...components,
   } satisfies MDXComponents;

@@ -18,6 +18,11 @@ const config = {
         destination: "/docs/getting-started",
         permanent: true,
       },
+      {
+        source: "/components",
+        destination: "/docs/uploads/dropzone",
+        permanent: true,
+      },
     ];
   },
 };

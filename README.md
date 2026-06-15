@@ -2,8 +2,7 @@
 
 <div align="center">
 
-<!-- Replace with screenshot once site is live -->
-<!-- ![Shelf UI Hero](https://shelfui.dev/og.png) -->
+![Shelf UI Hero](https://shelf-ui.vercel.app/opengraph-image)
 
 **The file UI library your app deserves.**
 
@@ -14,7 +13,7 @@ Built on React 19, Tailwind CSS v4, and your choice of Radix UI or Base UI.
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8.svg)](https://tailwindcss.com/)
 
-[Documentation](https://shelfui.dev/docs) · [Components](https://shelfui.dev/docs/components) · [Changelog](https://shelfui.dev/changelog)
+[Documentation](https://shelf-ui.vercel.app/docs) · [Components](https://shelf-ui.vercel.app/docs/components) · [Changelog](https://shelf-ui.vercel.app/changelog)
 
 </div>
 
@@ -79,7 +78,7 @@ Add Shelf UI to your `components.json`:
 ```json
 {
   "registries": {
-    "@shelf-ui": "https://shelfui.dev/r/{name}.json"
+    "@shelf-ui": "https://shelf-ui.vercel.app/r/{name}.json"
   }
 }
 ```
@@ -116,7 +115,7 @@ export default function Page() {
 }
 ```
 
-See [the docs](https://shelfui.dev/docs) for all components, props, and examples.
+See [the docs](https://shelf-ui.vercel.app/docs) for all components, props, and examples.
 
 ## Storage Adapters
 

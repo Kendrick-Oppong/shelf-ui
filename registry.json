@@ -1,6 +1,19 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "shelf-ui",
-  "homepage": "https://shelfui.dev",
-  "items": []
+  "homepage": "https://shelf-ui.vercel.app",
+  "items": [
+    {
+      "name": "dropzone",
+      "type": "registry:ui",
+      "dependencies": ["lucide-react", "react-dropzone"],
+      "files": [
+        {
+          "path": "registry/dropzone.tsx",
+          "target": "components/shelf-ui/dropzone.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    }
+  ]
 }

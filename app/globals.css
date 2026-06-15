@@ -361,6 +361,12 @@
   #nd-page {
     @apply mx-auto;
   }
+
+  /* remove margin inline when side bar is not collapsed, this fixes mdx page code block shifting behaviour */
+  #nd-notebook-layout[data-sidebar-collapsed="false"] #nd-page {
+    @apply mx-0!;
+  }
+
   /* sidebar & header */
   #nd-sidebar,
   #nd-subnav {
@@ -368,6 +374,10 @@
   }
   #nd-sidebar {
     @apply border-l;
+  }
+  /* sidebar category spacing  */
+  #nd-sidebar [data-radix-scroll-area-viewport] div {
+    @apply mb-2!;
   }
 
   #nd-subnav {

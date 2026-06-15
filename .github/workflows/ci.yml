@@ -27,7 +27,7 @@ jobs:
       - run: pnpm exec next typegen
 
       - run: pnpm typecheck      # TypeScript
-      # - run: pnpm registry:check # Validate registry output
+      - run: pnpm lint:registry # Validate registry output
 
   quality:
     name: quality
