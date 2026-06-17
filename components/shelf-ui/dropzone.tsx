@@ -76,6 +76,14 @@ export interface UseDropzoneOptions<TResult, TError> {
 
 type Action<TResult, TError> =
   | { type: "ADD_FILES"; files: Array<{ id: string; file: File }> }
+  | {
+      // Atomically removes overflow (oldest-first) and adds new files in a
+      // single state transition. This avoids the race that occurs when
+      // "remove oldest" and "add new" are dispatched as two separate actions
+      type: "ADD_FILES_WITH_SHIFT";
+      files: Array<{ id: string; file: File }>;
+      maxFiles: number;
+    }
   | { type: "REMOVE_FILE"; id: string }
   | { type: "SET_PENDING"; id: string }
   | { type: "SET_SUCCESS"; id: string; result: TResult }
@@ -97,6 +105,18 @@ function fileStatusReducer<TResult, TError>(
           tries: 0,
         })),
       ];
+    case "ADD_FILES_WITH_SHIFT": {
+      const incoming = action.files.map(({ id, file }) => ({
+        id,
+        file,
+        status: "pending" as const,
+        tries: 0,
+      }));
+      const combined = [...state, ...incoming];
+      // Keep only the most recent maxFiles entries – drop oldest first.
+      const overflow = combined.length - action.maxFiles;
+      return overflow > 0 ? combined.slice(overflow) : combined;
+    }
     case "REMOVE_FILE":
       return state.filter((f) => f.id !== action.id);
     case "SET_PENDING":
@@ -145,16 +165,39 @@ function formatRejectionError(
   return error.message;
 }
 
-function removeOldestFiles(
-  currentFiles: FileStatus[],
-  acceptedCount: number,
-  maxFiles: number
-): string[] {
-  const overflow = currentFiles.length + acceptedCount - maxFiles;
-  if (overflow <= 0) {
-    return [];
+// Pure, module-level helpers used inside the upload pipeline.
+function shapeError<TError>(
+  error: TError,
+  shapeUploadError?: (e: TError) => string
+): TError {
+  return shapeUploadError
+    ? (shapeUploadError(error) as unknown as TError)
+    : error;
+}
+
+function scheduleRetry<TError>(
+  id: string,
+  file: File,
+  fileStatusesRef: { current: FileStatus<unknown, TError>[] },
+  maxRetryCount: number,
+  isMountedRef: { current: boolean },
+  uploadFile: (id: string, file: File) => Promise<void>
+) {
+  const current = fileStatusesRef.current.find((f) => f.id === id);
+  if (!(current && current.tries < maxRetryCount)) {
+    return;
   }
-  return currentFiles.slice(0, overflow).map((f) => f.id);
+  const timeoutId = setTimeout(
+    () => {
+      // Guard against dispatching into an unmounted component
+      if (isMountedRef.current) {
+        uploadFile(id, file);
+      }
+    },
+    1000 * (current.tries + 1)
+  );
+
+  return timeoutId;
 }
 
 // ---------------------------------------------------------------------------
@@ -190,6 +233,24 @@ export function useDropzone<TResult = any, TError = any>({
   // Tracks in-flight uploads to prevent duplicate uploads for the same id.
   const uploadingRef = useRef<Set<string>>(new Set());
 
+  // Tracks whether the component is still mounted, so pending retry
+  // timeouts can bail out instead of dispatching after teardown.
+  const isMountedRef = useRef(true);
+  const pendingTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(
+    new Set()
+  );
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      // Clear any retries still waiting to fire.
+      for (const timeoutId of pendingTimeoutsRef.current) {
+        clearTimeout(timeoutId);
+      }
+      pendingTimeoutsRef.current.clear();
+    };
+  }, []);
+
   // Fire onAllUploaded when every file has settled (success or error).
   // Uses an effect so we read committed state, not the mid-dispatch snapshot.
   useEffect(() => {
@@ -202,32 +263,9 @@ export function useDropzone<TResult = any, TError = any>({
     }
   }, [fileStatuses, onAllUploaded]);
 
-  function shapeError<TError>(
-    error: TError,
-    shapeUploadError?: (e: TError) => string
-  ): TError {
-    return shapeUploadError
-      ? (shapeUploadError(error) as unknown as TError)
-      : error;
-  }
-
-  function scheduleRetry<TError>(
-    id: string,
-    file: File,
-    fileStatusesRef: React.RefObject<FileStatus<unknown, TError>[]>,
-    maxRetryCount: number,
-    uploadFile: (id: string, file: File) => Promise<void>
-  ) {
-    const current = fileStatusesRef.current.find((f) => f.id === id);
-    if (current && current.tries < maxRetryCount) {
-      setTimeout(() => uploadFile(id, file), 1000 * (current.tries + 1));
-    }
-  }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // biome-ignore lint/correctness/useExhaustiveDependencies: shapeError and scheduleRetry are stable module-level functions
   const uploadFile = useCallback(
     async (id: string, file: File) => {
+      // Deduplication guard – prevents double-uploads if called twice for the same id.
       if (uploadingRef.current.has(id)) {
         return;
       }
@@ -251,7 +289,17 @@ export function useDropzone<TResult = any, TError = any>({
           error: shapeError(result.error, shapeUploadError),
         });
         if (autoRetry) {
-          scheduleRetry(id, file, fileStatusesRef, maxRetryCount, uploadFile);
+          const timeoutId = scheduleRetry(
+            id,
+            file,
+            fileStatusesRef,
+            maxRetryCount,
+            isMountedRef,
+            uploadFile
+          );
+          if (timeoutId) {
+            pendingTimeoutsRef.current.add(timeoutId);
+          }
         }
       } catch (err) {
         dispatch({
@@ -260,7 +308,17 @@ export function useDropzone<TResult = any, TError = any>({
           error: shapeError(err as TError, shapeUploadError),
         });
         if (autoRetry) {
-          scheduleRetry(id, file, fileStatusesRef, maxRetryCount, uploadFile);
+          const timeoutId = scheduleRetry(
+            id,
+            file,
+            fileStatusesRef,
+            maxRetryCount,
+            isMountedRef,
+            uploadFile
+          );
+          if (timeoutId) {
+            pendingTimeoutsRef.current.add(timeoutId);
+          }
         }
       } finally {
         uploadingRef.current.delete(id);
@@ -282,33 +340,31 @@ export function useDropzone<TResult = any, TError = any>({
         return;
       }
 
-      // Read current statuses from ref, not captured closure value.
-      const currentStatuses = fileStatusesRef.current;
+      const newFiles = acceptedFiles.map((file) => ({
+        id: `${Date.now()}-${file.name}-${Math.random()}`,
+        file,
+      }));
 
       if (shiftOnMaxFiles && validation.maxFiles) {
-        const idsToRemove = removeOldestFiles(
-          currentStatuses,
-          acceptedFiles.length,
-          validation.maxFiles
-        );
-        for (const id of idsToRemove) {
-          dispatch({ type: "REMOVE_FILE", id });
-        }
+        // Single atomic dispatch – the reducer handles overflow removal and
+        // insertion together
+        dispatch({
+          type: "ADD_FILES_WITH_SHIFT",
+          files: newFiles,
+          maxFiles: validation.maxFiles,
+        });
       } else if (
         validation.maxFiles &&
-        currentStatuses.length + acceptedFiles.length > validation.maxFiles
+        fileStatusesRef.current.length + acceptedFiles.length >
+          validation.maxFiles
       ) {
         const msg = `Maximum ${validation.maxFiles} files allowed.`;
         setRootError(msg);
         onRootError?.(msg);
         return;
+      } else {
+        dispatch({ type: "ADD_FILES", files: newFiles });
       }
-
-      const newFiles = acceptedFiles.map((file) => ({
-        id: `${Date.now()}-${file.name}-${Math.random()}`,
-        file,
-      }));
-      dispatch({ type: "ADD_FILES", files: newFiles });
 
       for (const { id, file } of newFiles) {
         uploadFile(id, file);
@@ -346,6 +402,7 @@ export function useDropzone<TResult = any, TError = any>({
 
   const canRetry = useCallback(
     (id: string) => {
+      // Files not yet in state (or already removed) can't be retried.
       const file = fileStatusesRef.current.find((f) => f.id === id);
       return file ? file.tries < maxRetryCount : false;
     },
