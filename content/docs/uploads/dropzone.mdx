@@ -61,6 +61,7 @@ import {
   Dropzone,
   DropZoneArea,
   DropzoneTrigger,
+  DropzoneDescription,
   DropzoneMessage,
   useDropzone,
 } from "@/components/shelf-ui/dropzone";
@@ -83,6 +84,7 @@ export function BasicUpload() {
       <Dropzone {...dropzone}>
         <DropZoneArea>
           <DropzoneTrigger>Drag & drop or click to upload</DropzoneTrigger>
+          <DropzoneDescription>PNG, JPG up to 5MB</DropzoneDescription>
         </DropZoneArea>
         <DropzoneMessage />
       </Dropzone>
@@ -124,7 +126,7 @@ Dropzone (Provider)
 - `<DropZoneArea>` listens for drag events (`onDragEnter`, `onDragLeave`, `onDrop`) and applies the active/invalid styles automatically.
 - `<DropzoneTrigger>` is a `<button>` that contains a hidden `<input type="file">`. Clicking it opens the file picker. It is the only interactive element — keyboard and screen reader users interact with this.
 - `<DropzoneMessage>` reads `rootError` from context and renders it. Returns `null` when there is no error.
-- `<DropzoneDescription>` is a plain `<p>` for hint text (accepted formats, size limits, etc.).
+- `<DropzoneDescription>` is a plain `<p>` for hint text (accepted formats, size limits, etc.) — shown in the snippet above as `"PNG, JPG up to 5MB"`.
 
 ## Customising the Drag Element
 
@@ -216,7 +218,7 @@ Pass a React element; it will be cloned with the drag props merged in.
 
 ### Single File Upload (Avatar / Profile Picture)
 
-Use `shiftOnMaxFiles: true` to automatically replace the previous file instead of showing an error.
+Use `shiftOnMaxFiles: true` to automatically replace the previous file instead of showing an error. When the new file would exceed `maxFiles`, the oldest file is dropped first — this happens atomically, so it's safe even if the user drops files in rapid succession.
 
 ```tsx
 const dropzone = useDropzone({
@@ -277,7 +279,7 @@ const dropzone = useDropzone({
 
 ### Automatic Retry
 
-Failed uploads retry automatically with a back-off delay. Each retry waits `1000ms × attemptNumber`.
+Failed uploads retry automatically with a back-off delay. Each retry waits `1000ms × attemptNumber`. Retries are automatically cancelled if the component unmounts before they fire.
 
 ```tsx
 const dropzone = useDropzone({
@@ -391,6 +393,8 @@ function FormWithUpload() {
 
 ### Batch Controls
 
+`clearAll` removes every file from the queue in one call — useful for a "start over" action. Combine it with `onRetry` to build a "retry all failed" button:
+
 ```tsx
 function UploadWithBatchControls() {
   const dropzone = useDropzone({ onDropFile: uploadToServer });
@@ -444,9 +448,9 @@ The core hook that manages state, validation, and upload lifecycle.
 |-----------|------|----------|---------|-------------|
 | `onDropFile` | `(file: File) => Promise<{ status: "success"; result: TResult } \| { status: "error"; error: TError }>` | Yes | — | Async upload handler. Return `{ status: "success", result }` on success or `{ status: "error", error }` on failure. |
 | `validation` | `{ accept?, minSize?, maxSize?, maxFiles? }` | No | `{}` | Rules passed to react-dropzone. `accept` maps MIME types to extension arrays — use `[]` to accept any extension of that MIME type. Example: `{ "image/*": [], "application/pdf": [".pdf"] }`. |
-| `autoRetry` | `boolean` | No | `false` | Automatically retry failed uploads with back-off. |
+| `autoRetry` | `boolean` | No | `false` | Automatically retry failed uploads with back-off. Retries are cancelled automatically on unmount. |
 | `maxRetryCount` | `number` | No | `3` | Maximum retry attempts per file. |
-| `shiftOnMaxFiles` | `boolean` | No | `false` | Remove oldest files when `maxFiles` is exceeded, instead of showing an error. |
+| `shiftOnMaxFiles` | `boolean` | No | `false` | Remove oldest files (atomically, alongside the new ones being added) when `maxFiles` is exceeded, instead of showing an error. |
 | `shapeUploadError` | `(error: TError) => string` | No | `String` | Converts raw error objects into user-friendly strings before storing in state. |
 | `onRootError` | `(error: string) => void` | No | — | Called when a root validation error occurs. |
 | `onFileUploaded` | `(result: TResult, fileId: string) => void` | No | — | Called after each individual file upload succeeds. Receives the result your `onDropFile` returned plus the file's id. |
@@ -463,9 +467,9 @@ The core hook that manages state, validation, and upload lifecycle.
 | `getRootProps` | `function` | Props to spread onto the drag area element. |
 | `getInputProps` | `function` | Props to spread onto the hidden file input. |
 | `onRemove` | `(id: string) => void` | Removes a file from the queue. |
-| `onRetry` | `(id: string) => void` | Retries a failed file upload. |
-| `clearAll` | `() => void` | Removes all files from the queue. |
-| `canRetry` | `(id: string) => boolean` | Returns `true` if the file has not yet exceeded `maxRetryCount`. |
+| `onRetry` | `(id: string) => void` | Retries a failed file upload. No-op if the file isn't in an `"error"` state. |
+| `clearAll` | `() => void` | Removes every file from the queue. See [Batch Controls](#batch-controls) for a usage example. |
+| `canRetry` | `(id: string) => boolean` | Returns `true` if the file has not yet exceeded `maxRetryCount`. Returns `false` if the file id doesn't exist in the queue. |
 
 ### `FileStatus`
 
@@ -485,10 +489,10 @@ interface FileStatus<TResult, TError> {
 | Component | Renders | Description |
 |-----------|---------|-------------|
 | `Dropzone` | — | Context provider. Spread the `useDropzone()` return value onto it. |
-| `DropZoneArea` | `div` | The drag target. Accepts `asChild` (Radix) and `render` prop (Base UI) for element customisation. |
+| `DropZoneArea` | `div` | The drag target. Accepts `asChild` (Radix) and `render` prop (Base UI) for element customisation — see [Customising the Drag Element](#customising-the-drag-element). |
 | `DropzoneTrigger` | `button` | Clickable trigger that contains the hidden `<input type="file">`. This is the only focusable element — all keyboard and pointer interactions go through here. |
 | `DropzoneMessage` | `p` | Renders the root validation error. Returns `null` when there is no error. |
-| `DropzoneDescription` | `p` | Helper text — accepted formats, size limits, etc. |
+| `DropzoneDescription` | `p` | Helper text — accepted formats, size limits, etc. See the [Usage](#usage) example above. |
 
 ## Accessibility
 
@@ -500,21 +504,3 @@ interface FileStatus<TResult, TError> {
 
 - **Object URL cleanup** — Always call `URL.revokeObjectURL()` when components displaying previews unmount.
 - **Large lists** — Use a virtualization library (e.g., `react-window`) when rendering hundreds of file entries.
-
-## Testing
-
-```tsx
-import { render, screen, fireEvent } from "@testing-library/react";
-
-const dropzone = screen.getByRole("presentation"); // DropZoneArea
-
-fireEvent.drop(dropzone, {
-  dataTransfer: {
-    files: [new File(["dummy"], "test.png", { type: "image/png" })],
-  },
-});
-```
-
-<Callout type="info">
-  Mock the native `File` API if your test environment lacks full support. For Vitest, `@vitest/browser` or `happy-dom` cover most cases.
-</Callout>
