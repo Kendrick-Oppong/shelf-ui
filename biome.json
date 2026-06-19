@@ -24,7 +24,8 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noEmptyBlockStatements": "off"
       },
       "style": {
         "noDefaultExport": "off"
