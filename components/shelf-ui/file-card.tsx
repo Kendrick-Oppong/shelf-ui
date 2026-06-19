@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, RotateCcw, X } from "lucide-react";
+import { CheckCircle2, Loader2, RotateCcw, X } from "lucide-react";
 import {
   type ComponentProps,
   createContext,
@@ -61,11 +61,7 @@ function truncateFileName(name: string, maxLength = 28): string {
 /**
  * Creates an object URL for a File and revokes it automatically when the
  * file changes or the component unmounts. Returns null until the file is
- * ready (effectively immediate, but keeps the hook SSR-safe).
- *
- * Centralising this means every consumer of object URLs in this file gets
- * leak-free behaviour for free, instead of relying on each call site (or
- * each downstream user) to remember cleanup.
+ * ready (effectively immediate, but keeps the hook SSR-safe)
  */
 export function useFileObjectUrl(file: File | undefined): string | null {
   const [url, setUrl] = useState<string | null>(null);
@@ -262,9 +258,7 @@ export function FileCardPreview({
     );
   }
 
-  if (previewContent == null) {
-    previewContent = <StatusIcon status={status} />;
-  }
+  previewContent ??= <StatusIcon status={status} />;
 
   return (
     <div
@@ -288,9 +282,7 @@ function StatusIcon({ status }: { status: UploadStatus }) {
   if (status === "error") {
     return <X className="h-4 w-4 text-destructive" />;
   }
-  // success – a simple filled dot keeps this dependency-free; swap for
-  // lucide's CheckCircle2 if you'd rather show a check mark.
-  return <div className="h-2 w-2 rounded-full bg-primary" />;
+  return <CheckCircle2 className="h-2 w-2 rounded-full bg-primary" />;
 }
 
 // ---------------------------------------------------------------------------
