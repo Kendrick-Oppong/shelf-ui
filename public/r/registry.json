@@ -6,11 +6,24 @@
     {
       "name": "dropzone",
       "type": "registry:ui",
-      "dependencies": ["lucide-react", "react-dropzone"],
+      "dependencies": ["react-dropzone"],
       "files": [
         {
           "path": "registry/dropzone.tsx",
           "target": "components/shelf-ui/dropzone.tsx",
+          "type": "registry:ui"
+        }
+      ]
+    },
+    {
+      "name": "file-card",
+      "type": "registry:ui",
+      "dependencies": ["lucide-react"],
+      "registryDependencies": ["button", "dropzone"],
+      "files": [
+        {
+          "path": "registry/file-card.tsx",
+          "target": "components/shelf-ui/file-card.tsx",
           "type": "registry:ui"
         }
       ]

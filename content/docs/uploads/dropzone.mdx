@@ -5,9 +5,16 @@ description: A headless drag-and-drop zone with upload state management, validat
 
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { Callout } from "fumadocs-ui/components/callout";
+import { DemoWithCode } from "@/components/docs/demo-with-code";
+import { DropzoneBasicDemo } from "@/components/examples/dropzone/basic/dropzone-basic-demo";
+import { DropzoneAutoRetryDemo } from "@/components/examples/dropzone/advanced/dropzone-auto-retry-demo";
+import { DropzoneCustomErrorsDemo } from "@/components/examples/dropzone/advanced/dropzone-custom-errors-demo";
+import { DropzoneMultipleFilesDemo } from "@/components/examples/dropzone/advanced/dropzone-multiple-files-demo";
+import { DropzoneAvatarDemo } from "@/components/examples/dropzone/layouts/dropzone-avatar-demo";
+import { DropzoneGridDemo } from "@/components/examples/dropzone/layouts/dropzone-grid-demo";
 
 <Callout type="info">
-  This component handles drag-and-drop mechanics, native file input synchronization, validation, and upload state management. It **does not** render file lists, progress bars, or per-file actions. Use [`FileCard`](/components/uploads/file-card) + [`UploadQueue`](/components/uploads/upload-queue) (or your own components) to display the queue.
+  This component handles drag-and-drop mechanics, native file input synchronization, validation, and upload state management. It **does not** render the file list itself. Use [`FileCard`](/docs/uploads/file-card) — a small compound component for a single file row — mapped over `fileStatuses` to build your queue, or bring your own components entirely.
 </Callout>
 
 ## Dependencies
@@ -48,254 +55,75 @@ bunx shadcn@latest add @shelf-ui/dropzone
   </Tab>
 </Tabs>
 
-<Callout type="info">
-  Like shadcn/ui, Shelf UI copies the component source directly into your project. You own the code — feel free to modify it to fit your needs.
-</Callout>
-
 ## Usage
 
 The Dropzone exports a headless hook and compound components. You control the drag area and the file display.
 
-```tsx
-import {
-  Dropzone,
-  DropZoneArea,
-  DropzoneTrigger,
-  DropzoneDescription,
-  DropzoneMessage,
-  useDropzone,
-} from "@/components/shelf-ui/dropzone";
-import { FileCard } from "@/components/shelf-ui/file-card";
+<DemoWithCode src="components/examples/dropzone/basic/dropzone-basic-demo.tsx">
+  <DropzoneBasicDemo />
+</DemoWithCode>
 
-export function BasicUpload() {
+## Connecting to your API
+
+The dropzone does not upload files on its own; it manages the state around your API call. The production setup usually looks like this, where `onDropFile` handles your upload API, and you handle deletions in your UI by calling your API before calling `dropzone.onRemove(id)`:
+
+```tsx
+function UploadComponent() {
   const dropzone = useDropzone({
-    onDropFile: async (file: File) => {
-      const url = await uploadToServer(file);
-      return { status: "success", result: url };
+    // 1. Upload to your server
+    onDropFile: async (file) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return { status: "success", result: data.url };
+      }
+
+      return { status: "error", error: "Upload failed" };
     },
     validation: {
-      maxSize: 5 * 1024 * 1024,
-      accept: { "image/*": [] },
+      maxFiles: 10,
+      maxSize: 10 * 1024 * 1024,
     },
   });
 
-  return (
-    <div>
-      <Dropzone {...dropzone}>
-        <DropZoneArea>
-          <DropzoneTrigger>Drag & drop or click to upload</DropzoneTrigger>
-          <DropzoneDescription>PNG, JPG up to 5MB</DropzoneDescription>
-        </DropZoneArea>
-        <DropzoneMessage />
-      </Dropzone>
+  // 2. Delete from your server (optional)
+  const handleRemove = async (id: string, fileUrl: string) => {
+    // Fire API call to delete from server
+    await fetch("/api/upload", {
+      method: "DELETE",
+      body: JSON.stringify({ url: fileUrl }),
+    });
+    // Remove from UI
+    dropzone.onRemove(id);
+  };
 
-      <div className="mt-4 space-y-2">
-        {dropzone.fileStatuses.map((status) => (
-          <FileCard
-            key={status.id}
-            file={status.file}
-            status={status.status}
-            error={status.error}
-            progress={status.status === "pending" ? "indeterminate" : undefined}
-            onRemove={() => dropzone.onRemove(status.id)}
-            onRetry={() => dropzone.onRetry(status.id)}
-          />
-        ))}
-      </div>
-    </div>
+  return (
+    <Dropzone {...dropzone}>
+      <DropZoneArea>
+        <DropzoneTrigger>Upload files</DropzoneTrigger>
+      </DropZoneArea>
+      {dropzone.fileStatuses.map((status) => (
+         <FileCard 
+           key={status.id} 
+           fileStatus={status} 
+           onRemove={() => handleRemove(status.id, status.result)}
+           // dropzone.onRetry already automatically calls your onDropFile API again!
+           onRetry={() => dropzone.onRetry(status.id)}
+         />
+      ))}
+    </Dropzone>
   );
 }
 ```
 
-## Composition
-
-The Dropzone follows a compound component pattern. File list rendering is entirely delegated to you.
-
-```text
-Dropzone (Provider)
-├── DropzoneMessage       (root-level validation errors)
-├── DropZoneArea          (drag target)
-│   └── DropzoneTrigger   (clickable trigger + hidden file input)
-│       └── DropzoneDescription (helper text)
-```
-
-**How the pieces connect:**
-
-- `useDropzone()` runs your upload logic and manages all state.
-- `<Dropzone {...dropzone}>` is a context provider — it makes that state available to every subcomponent below it.
-- `<DropZoneArea>` listens for drag events (`onDragEnter`, `onDragLeave`, `onDrop`) and applies the active/invalid styles automatically.
-- `<DropzoneTrigger>` is a `<button>` that contains a hidden `<input type="file">`. Clicking it opens the file picker. It is the only interactive element — keyboard and screen reader users interact with this.
-- `<DropzoneMessage>` reads `rootError` from context and renders it. Returns `null` when there is no error.
-- `<DropzoneDescription>` is a plain `<p>` for hint text (accepted formats, size limits, etc.) — shown in the snippet above as `"PNG, JPG up to 5MB"`.
-
-## Customising the Drag Element
-
-`DropZoneArea` renders a `<div>` that owns all the drag event handlers. Any elements you put inside it are regular children — you can nest whatever you like without any special props:
-
-```tsx
-// Just nest it — no special props needed
-<DropZoneArea>
-  <section>
-    <DropzoneTrigger>Click or drag to upload</DropzoneTrigger>
-  </section>
-</DropZoneArea>
-
-// renders:
-// <div onDragEnter={…} onDrop={…} className="…">   ← drag events live here
-//   <section>
-//     <button>…</button>
-//   </section>
-// </div>
-```
-
-The wrapper `<div>` is a plain block element — it won't cause layout problems in the vast majority of cases.
-
-### When to use `asChild` or `render`
-
-`asChild` (Radix UI) and the `render` prop (Base UI) exist for one specific situation: you need to **eliminate the wrapper `<div>` entirely** so that your element directly receives the drag handlers. This comes up when:
-
-- You have a strict semantic HTML or ARIA landmark requirement where the drag zone itself must be a specific element (e.g. `<section>`, `<article>`).
-- You are integrating with a third-party component that must own its own root element.
-
-If neither of those applies, stick with the default.
-
-<Callout type="info">
-  `asChild` and `render` are only available because Shelf UI supports both Radix UI and Base UI as primitive libraries. Use whichever matches the one you installed.
-</Callout>
-
-### Radix UI — `asChild`
-
-Merges the drag props directly onto the single child element. The wrapper `<div>` is not rendered.
-
-```tsx
-<DropZoneArea asChild>
-  <section>
-    <DropzoneTrigger>Click or drag to upload</DropzoneTrigger>
-  </section>
-</DropZoneArea>
-
-// renders:
-// <section onDragEnter={…} onDrop={…} className="…">  ← no wrapper div
-//   <button>…</button>
-// </section>
-```
-
-### Base UI — `render` prop (function form)
-
-The drag props are passed to you as an argument. Spread them onto whatever element you want.
-
-```tsx
-<DropZoneArea
-  render={(props) => (
-    <section {...props}>
-      <DropzoneTrigger>Click or drag to upload</DropzoneTrigger>
-    </section>
-  )}
-/>
-
-// renders:
-// <section onDragEnter={…} onDrop={…} className="…">  ← no wrapper div
-//   <button>…</button>
-// </section>
-```
-
-### Base UI — `render` prop (element form)
-
-Pass a React element; it will be cloned with the drag props merged in.
-
-```tsx
-<DropZoneArea render={<section />}>
-  <DropzoneTrigger>Click or drag to upload</DropzoneTrigger>
-</DropZoneArea>
-
-// renders:
-// <section onDragEnter={…} onDrop={…} className="…">  ← no wrapper div
-//   <button>…</button>
-// </section>
-```
-
-## Advanced Patterns
-
-### Single File Upload (Avatar / Profile Picture)
-
-Use `shiftOnMaxFiles: true` to automatically replace the previous file instead of showing an error. When the new file would exceed `maxFiles`, the oldest file is dropped first — this happens atomically, so it's safe even if the user drops files in rapid succession.
-
-```tsx
-const dropzone = useDropzone({
-  onDropFile: uploadToServer,
-  validation: {
-    maxFiles: 1,
-    maxSize: 2 * 1024 * 1024,
-    accept: { "image/*": [] },
-  },
-  shiftOnMaxFiles: true,
-});
-```
-
-### Multiple File Upload
-
-```tsx
-const dropzone = useDropzone({
-  onDropFile: async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      return { status: "success", result: data.url };
-    }
-
-    return { status: "error", error: "Upload failed" };
-  },
-  validation: {
-    maxFiles: 10,
-    maxSize: 10 * 1024 * 1024,
-  },
-});
-```
-
-### Custom Error Messages
-
-```tsx
-const dropzone = useDropzone({
-  onDropFile: uploadToServer,
-  validation: { maxSize: 5 * 1024 * 1024 },
-  shapeUploadError: (error) => {
-    if (error.code === "file-too-large") {
-      return "This file is too large. Please choose a file under 5MB.";
-    }
-    if (error.code === "file-invalid-type") {
-      return "This file type is not supported.";
-    }
-    return "Something went wrong. Please try again.";
-  },
-});
-```
-
-### Automatic Retry
-
-Failed uploads retry automatically with a back-off delay. Each retry waits `1000ms × attemptNumber`. Retries are automatically cancelled if the component unmounts before they fire.
-
-```tsx
-const dropzone = useDropzone({
-  onDropFile: uploadToServer,
-  autoRetry: true,
-  maxRetryCount: 3,
-  onFileUploaded: (result, fileId) => {
-    console.log(`File ${fileId} uploaded:`, result);
-  },
-  onAllUploaded: () => {
-    console.log("All files uploaded!");
-  },
-});
-```
-
-### Form Integration (React Hook Form)
+## Form Integration (React Hook Form)
 
 Each file is uploaded immediately on drop. `onFileUploaded` fires per file with its result — use it to push the returned URL (or ID) into your form state. The form itself submits normally via `handleSubmit`.
 
@@ -313,22 +141,7 @@ function FormWithUpload() {
   });
 
   const dropzone = useDropzone({
-    onDropFile: async (file) => {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        return { status: "error", error: "Upload failed" };
-      }
-
-      const { url } = await response.json();
-      return { status: "success", result: url };
-    },
+    onDropFile: uploadToServer, // your fetch function
     // Called once per file after a successful upload.
     // Append the returned URL to the "attachments" field in the form.
     onFileUploaded: (url) => {
@@ -366,75 +179,130 @@ function FormWithUpload() {
 }
 ```
 
+## Layout Examples
+
+### Single File Upload (Avatar / Profile Picture)
+
+Use `shiftOnMaxFiles: true` to automatically replace the previous file instead of showing an error. When the new file would exceed `maxFiles`, the oldest file is dropped first — this happens atomically, so it's safe even if the user drops files in rapid succession.
+
+<DemoWithCode src="components/examples/dropzone/layouts/dropzone-avatar-demo.tsx">
+  <DropzoneAvatarDemo />
+</DemoWithCode>
+
+### Multiple File Upload
+
+Use `validation.maxFiles` to cap the queue, map `fileStatuses` to `FileCard`, and use `clearAll` / `retryFailed` for batch-level controls. This demo also shows the practical error path: name a file with `fail` in it to see retry UI.
+
+<DemoWithCode src="components/examples/dropzone/advanced/dropzone-multiple-files-demo.tsx">
+  <DropzoneMultipleFilesDemo />
+</DemoWithCode>
+
 ### Image Grid Preview
 
-```tsx
-<div className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3">
-  {dropzone.fileStatuses.map((status) => (
-    <div key={status.id} className="relative aspect-square">
-      <img
-        src={URL.createObjectURL(status.file)}
-        alt={status.file.name}
-        className="h-full w-full rounded-lg object-cover"
-      />
-      {status.status === "pending" && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
-          <Loader2 className="animate-spin text-white" />
-        </div>
-      )}
-    </div>
-  ))}
-</div>
-```
+A gallery-style layout for image-heavy uploads, where thumbnails matter more than filenames or progress text.
 
-<Callout type="warn">
-  `URL.createObjectURL` creates a memory reference that persists until the page is unloaded or you manually release it. Call `URL.revokeObjectURL(url)` in a cleanup effect when the component unmounts to avoid memory leaks.
+<DemoWithCode src="components/examples/dropzone/layouts/dropzone-grid-demo.tsx">
+  <DropzoneGridDemo />
+</DemoWithCode>
+
+<Callout type="info">
+  This gallery keeps a stable object URL per file and revokes URLs when files are removed. For row-based queues, `FileCardPreview showImageThumbnail` gives you the same cleanup automatically.
 </Callout>
 
-### Batch Controls
+## Error Handling & Retry
 
-`clearAll` removes every file from the queue in one call — useful for a "start over" action. Combine it with `onRetry` to build a "retry all failed" button:
+### Custom Error Messages
+
+There are two error surfaces:
+
+- **Root validation errors** from `react-dropzone`, such as invalid file type, too many files, or file size. These appear through `DropzoneMessage` and `rootError`.
+- **Upload errors** from your `onDropFile` handler. Shape those with `shapeUploadError`, then render them in `FileCardInfo`.
+
+<DemoWithCode src="components/examples/dropzone/advanced/dropzone-custom-errors-demo.tsx">
+  <DropzoneCustomErrorsDemo />
+</DemoWithCode>
 
 ```tsx
-function UploadWithBatchControls() {
-  const dropzone = useDropzone({ onDropFile: uploadToServer });
-
-  const hasFiles = dropzone.fileStatuses.length > 0;
-  const hasFailedFiles = dropzone.fileStatuses.some((f) => f.status === "error");
-
-  return (
-    <div>
-      {hasFiles && (
-        <div className="mb-4 flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => dropzone.clearAll()}>
-            Clear All
-          </Button>
-          {hasFailedFiles && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                dropzone.fileStatuses
-                  .filter((f) => f.status === "error")
-                  .forEach((f) => dropzone.onRetry(f.id));
-              }}
-            >
-              Retry Failed
-            </Button>
-          )}
-        </div>
-      )}
-
-      <Dropzone {...dropzone}>
-        <DropZoneArea>
-          <DropzoneTrigger>Click or drag to upload</DropzoneTrigger>
-        </DropZoneArea>
-        <DropzoneMessage />
-      </Dropzone>
-    </div>
-  );
-}
+const dropzone = useDropzone({
+  onDropFile: uploadToServer,
+  validation: { maxSize: 5 * 1024 * 1024 },
+  shapeUploadError: (error) => {
+    if (error.code === "file-too-large") {
+      return "This file is too large. Please choose a file under 5MB.";
+    }
+    if (error.code === "file-invalid-type") {
+      return "This file type is not supported.";
+    }
+    return "Something went wrong. Please try again.";
+  },
+});
 ```
+
+### Automatic Retry
+
+Failed uploads retry automatically with a back-off delay. Each retry waits `1000ms × attemptNumber`. Retries are automatically cancelled if the component unmounts before they fire, and removed files are not retried.
+
+<DemoWithCode src="components/examples/dropzone/advanced/dropzone-auto-retry-demo.tsx">
+  <DropzoneAutoRetryDemo />
+</DemoWithCode>
+
+```tsx
+const dropzone = useDropzone({
+  onDropFile: uploadToServer,
+  autoRetry: true,
+  maxRetryCount: 3,
+  onFileUploaded: (result, fileId) => {
+    console.log(`File ${fileId} uploaded:`, result);
+  },
+  onAllUploaded: () => {
+    console.log("All files uploaded!");
+  },
+});
+```
+
+## Advanced: Composition & Drag Element
+
+The Dropzone follows a compound component pattern. File list rendering is entirely delegated to you.
+
+```text
+Dropzone (Provider)
+├── DropzoneMessage       (root-level validation errors)
+├── DropZoneArea          (drag target)
+│   └── DropzoneTrigger   (clickable trigger + hidden file input)
+│       └── DropzoneDescription (helper text)
+```
+
+**How the pieces connect:**
+
+- `useDropzone()` runs your upload logic and manages all state.
+- `<Dropzone {...dropzone}>` is a context provider — it makes that state available to every subcomponent below it.
+- `<DropZoneArea>` listens for drag events (`onDragEnter`, `onDragLeave`, `onDrop`) and applies the active/invalid styles automatically.
+- `<DropzoneTrigger>` renders a hidden `<input type="file">` alongside a `<button>`. Clicking the button opens the file picker, even when the trigger is used without a `DropZoneArea`.
+- `<DropzoneMessage>` reads `rootError` from context and renders it. Returns `null` when there is no error.
+- `<DropzoneDescription>` is a plain `<p>` for hint text (accepted formats, size limits, etc.).
+
+### Customising the Drag Element
+
+`DropZoneArea` renders a `<div>` that owns all the drag event handlers. Any elements you put inside it are regular children — you can nest whatever you like without any special props:
+
+```tsx
+// Just nest it — no special props needed
+<DropZoneArea>
+  <section>
+    <DropzoneTrigger>Click or drag to upload</DropzoneTrigger>
+  </section>
+</DropZoneArea>
+```
+
+### When to use `asChild` or `render`
+
+`asChild` (Radix UI) and the `render` prop (Base UI) exist for one specific situation: you need to **eliminate the wrapper `<div>` entirely** so that your element directly receives the drag handlers. 
+
+If neither applies, stick with the default.
+
+<Callout type="info">
+  `asChild` and `render` are only available because Shelf UI supports both Radix UI and Base UI as primitive libraries. Use whichever matches the one you installed.
+</Callout>
 
 ## API Reference
 
@@ -447,13 +315,13 @@ The core hook that manages state, validation, and upload lifecycle.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `onDropFile` | `(file: File) => Promise<{ status: "success"; result: TResult } \| { status: "error"; error: TError }>` | Yes | — | Async upload handler. Return `{ status: "success", result }` on success or `{ status: "error", error }` on failure. |
-| `validation` | `{ accept?, minSize?, maxSize?, maxFiles? }` | No | `{}` | Rules passed to react-dropzone. `accept` maps MIME types to extension arrays — use `[]` to accept any extension of that MIME type. Example: `{ "image/*": [], "application/pdf": [".pdf"] }`. |
+| `validation` | `{ accept?, minSize?, maxSize?, maxFiles? }` | No | `{}` | Rules passed to react-dropzone. `accept` maps MIME types to extension arrays. |
 | `autoRetry` | `boolean` | No | `false` | Automatically retry failed uploads with back-off. Retries are cancelled automatically on unmount. |
 | `maxRetryCount` | `number` | No | `3` | Maximum retry attempts per file. |
 | `shiftOnMaxFiles` | `boolean` | No | `false` | Remove oldest files (atomically, alongside the new ones being added) when `maxFiles` is exceeded, instead of showing an error. |
 | `shapeUploadError` | `(error: TError) => string` | No | `String` | Converts raw error objects into user-friendly strings before storing in state. |
 | `onRootError` | `(error: string) => void` | No | — | Called when a root validation error occurs. |
-| `onFileUploaded` | `(result: TResult, fileId: string) => void` | No | — | Called after each individual file upload succeeds. Receives the result your `onDropFile` returned plus the file's id. |
+| `onFileUploaded` | `(result: TResult, fileId: string) => void` | No | — | Called after each individual file upload succeeds. |
 | `onAllUploaded` | `() => void` | No | — | Called once when every file in the current batch has settled (success or error). |
 
 #### Return Value
@@ -468,8 +336,12 @@ The core hook that manages state, validation, and upload lifecycle.
 | `getInputProps` | `function` | Props to spread onto the hidden file input. |
 | `onRemove` | `(id: string) => void` | Removes a file from the queue. |
 | `onRetry` | `(id: string) => void` | Retries a failed file upload. No-op if the file isn't in an `"error"` state. |
-| `clearAll` | `() => void` | Removes every file from the queue. See [Batch Controls](#batch-controls) for a usage example. |
-| `canRetry` | `(id: string) => boolean` | Returns `true` if the file has not yet exceeded `maxRetryCount`. Returns `false` if the file id doesn't exist in the queue. |
+| `removeFile` | `(id: string) => void` | Alias for `onRemove`. |
+| `retryFile` | `(id: string) => void` | Alias for `onRetry`. |
+| `clearAll` | `() => void` | Removes every file from the queue. |
+| `retryFailed` | `() => void` | Retries every failed file that still has retry attempts remaining. |
+| `canRetry` | `(id: string) => boolean` | Returns `true` if the file has not yet exceeded `maxRetryCount`. |
+| `open` | `() => void` | Programmatically opens the native file picker. |
 
 ### `FileStatus`
 
@@ -489,10 +361,10 @@ interface FileStatus<TResult, TError> {
 | Component | Renders | Description |
 |-----------|---------|-------------|
 | `Dropzone` | — | Context provider. Spread the `useDropzone()` return value onto it. |
-| `DropZoneArea` | `div` | The drag target. Accepts `asChild` (Radix) and `render` prop (Base UI) for element customisation — see [Customising the Drag Element](#customising-the-drag-element). |
-| `DropzoneTrigger` | `button` | Clickable trigger that contains the hidden `<input type="file">`. This is the only focusable element — all keyboard and pointer interactions go through here. |
+| `DropZoneArea` | `div` | The drag target. Accepts `asChild` (Radix) and `render` prop (Base UI). |
+| `DropzoneTrigger` | `button` | Clickable trigger that renders the hidden file input and opens the picker. |
 | `DropzoneMessage` | `p` | Renders the root validation error. Returns `null` when there is no error. |
-| `DropzoneDescription` | `p` | Helper text — accepted formats, size limits, etc. See the [Usage](#usage) example above. |
+| `DropzoneDescription` | `p` | Helper text — accepted formats, size limits, etc. |
 
 ## Accessibility
 
@@ -502,5 +374,5 @@ interface FileStatus<TResult, TError> {
 
 ## Performance
 
-- **Object URL cleanup** — Always call `URL.revokeObjectURL()` when components displaying previews unmount.
+- **Object URL cleanup** — Prefer `FileCardPreview showImageThumbnail` or `useFileObjectUrl` from FileCard for local previews. Both revoke object URLs automatically.
 - **Large lists** — Use a virtualization library (e.g., `react-window`) when rendering hundreds of file entries.

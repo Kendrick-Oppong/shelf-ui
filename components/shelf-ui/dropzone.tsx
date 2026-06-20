@@ -4,8 +4,10 @@ import {
   type ButtonHTMLAttributes,
   cloneElement,
   createContext,
+  type Dispatch,
   type HTMLAttributes,
   isValidElement,
+  type MouseEvent,
   type ReactElement,
   type ReactNode,
   type Ref,
@@ -20,7 +22,6 @@ import {
   type FileRejection,
   useDropzone as useReactDropzone,
 } from "react-dropzone";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
@@ -29,9 +30,7 @@ import { cn } from "@/lib/utils";
 
 export type UploadStatus = "pending" | "success" | "error";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// biome-ignore lint/suspicious/noExplicitAny: any is used for flexible generics
-export interface FileStatus<TResult = any, TError = any> {
+export interface FileStatus<TResult = unknown, TError = unknown> {
   error?: TError;
   file: File;
   id: string;
@@ -57,6 +56,8 @@ export interface UseDropzoneOptions<TResult, TError> {
   onFileUploaded?: (result: TResult, fileId: string) => void;
   /** Called when a root validation error occurs */
   onRootError?: (error: string) => void;
+  /** Format react-dropzone validation rejections into user-friendly strings */
+  shapeRejectionError?: (rejection: FileRejection) => string;
   /** Format raw error objects into user-friendly strings */
   shapeUploadError?: (error: TError) => string;
   /** When maxFiles is exceeded, remove oldest files instead of showing an error */
@@ -175,49 +176,85 @@ function shapeError<TError>(
     : error;
 }
 
-function scheduleRetry<TError>(
+function getRetryDelay(tries: number): number {
+  return 1000 * Math.max(tries, 1);
+}
+
+function scheduleRetry<TResult, TError>(
   id: string,
   file: File,
-  fileStatusesRef: { current: FileStatus<unknown, TError>[] },
+  fileStatusesRef: { current: FileStatus<TResult, TError>[] },
   maxRetryCount: number,
   isMountedRef: { current: boolean },
+  pendingTimeoutsRef: { current: Set<ReturnType<typeof setTimeout>> },
   uploadFile: (id: string, file: File) => Promise<void>
 ) {
   const current = fileStatusesRef.current.find((f) => f.id === id);
   if (!(current && current.tries < maxRetryCount)) {
     return;
   }
-  const timeoutId = setTimeout(
-    () => {
-      // Guard against dispatching into an unmounted component
-      if (isMountedRef.current) {
-        uploadFile(id, file);
-      }
-    },
-    1000 * (current.tries + 1)
-  );
+  const timeoutId = setTimeout(() => {
+    pendingTimeoutsRef.current.delete(timeoutId);
+    const currentFile = fileStatusesRef.current.find((f) => f.id === id);
+    // Guard against dispatching after teardown or retrying a removed file.
+    if (
+      isMountedRef.current &&
+      currentFile?.status === "error" &&
+      currentFile.tries < maxRetryCount
+    ) {
+      uploadFile(id, file);
+    }
+  }, getRetryDelay(current.tries));
 
+  pendingTimeoutsRef.current.add(timeoutId);
   return timeoutId;
+}
+
+function clearRetryTimeouts(pendingTimeoutsRef: {
+  current: Set<ReturnType<typeof setTimeout>>;
+}) {
+  for (const timeoutId of pendingTimeoutsRef.current) {
+    clearTimeout(timeoutId);
+  }
+  pendingTimeoutsRef.current.clear();
+}
+
+function createFileId(file: File): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${file.name}-${Math.random()}`;
+}
+
+function composeRefs<T>(...refs: Array<Ref<T> | undefined>) {
+  return (node: T | null) => {
+    for (const ref of refs) {
+      if (typeof ref === "function") {
+        ref(node);
+      } else if (ref) {
+        ref.current = node;
+      }
+    }
+  };
 }
 
 // ---------------------------------------------------------------------------
 // Main Hook
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// biome-ignore lint/suspicious/noExplicitAny: any is the default generic
-export function useDropzone<TResult = any, TError = any>({
+export function useDropzone<TResult = unknown, TError = unknown>({
   onDropFile,
   validation = {},
   autoRetry = false,
   maxRetryCount = 3,
   shiftOnMaxFiles = false,
   shapeUploadError = String,
+  shapeRejectionError,
   onRootError,
   onFileUploaded,
   onAllUploaded,
 }: UseDropzoneOptions<TResult, TError>) {
-  const [fileStatuses, dispatch] = useReducer(
+  const [fileStatuses, baseDispatch] = useReducer(
     fileStatusReducer<TResult, TError>,
     []
   );
@@ -230,6 +267,14 @@ export function useDropzone<TResult = any, TError = any>({
     fileStatusesRef.current = fileStatuses;
   }, [fileStatuses]);
 
+  const dispatch = useCallback<Dispatch<Action<TResult, TError>>>((action) => {
+    fileStatusesRef.current = fileStatusReducer(
+      fileStatusesRef.current,
+      action
+    );
+    baseDispatch(action);
+  }, []);
+
   // Tracks in-flight uploads to prevent duplicate uploads for the same id.
   const uploadingRef = useRef<Set<string>>(new Set());
 
@@ -239,15 +284,12 @@ export function useDropzone<TResult = any, TError = any>({
   const pendingTimeoutsRef = useRef<Set<ReturnType<typeof setTimeout>>>(
     new Set()
   );
+  const wasAllSettledRef = useRef(false);
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      // Clear any retries still waiting to fire.
-      for (const timeoutId of pendingTimeoutsRef.current) {
-        clearTimeout(timeoutId);
-      }
-      pendingTimeoutsRef.current.clear();
+      clearRetryTimeouts(pendingTimeoutsRef);
     };
   }, []);
 
@@ -255,12 +297,14 @@ export function useDropzone<TResult = any, TError = any>({
   // Uses an effect so we read committed state, not the mid-dispatch snapshot.
   useEffect(() => {
     if (fileStatuses.length === 0) {
+      wasAllSettledRef.current = false;
       return;
     }
     const allSettled = fileStatuses.every((f) => f.status !== "pending");
-    if (allSettled) {
+    if (allSettled && !wasAllSettledRef.current) {
       onAllUploaded?.();
     }
+    wasAllSettledRef.current = allSettled;
   }, [fileStatuses, onAllUploaded]);
 
   const uploadFile = useCallback(
@@ -275,10 +319,15 @@ export function useDropzone<TResult = any, TError = any>({
 
       try {
         const result = await onDropFile(file);
+        if (!fileStatusesRef.current.some((f) => f.id === id)) {
+          return;
+        }
 
         if (result.status === "success") {
           dispatch({ type: "SET_SUCCESS", id, result: result.result });
-          onFileUploaded?.(result.result, id);
+          if (fileStatusesRef.current.some((f) => f.id === id)) {
+            onFileUploaded?.(result.result, id);
+          }
           return;
         }
 
@@ -289,43 +338,49 @@ export function useDropzone<TResult = any, TError = any>({
           error: shapeError(result.error, shapeUploadError),
         });
         if (autoRetry) {
-          const timeoutId = scheduleRetry(
+          scheduleRetry(
             id,
             file,
             fileStatusesRef,
             maxRetryCount,
             isMountedRef,
+            pendingTimeoutsRef,
             uploadFile
           );
-          if (timeoutId) {
-            pendingTimeoutsRef.current.add(timeoutId);
-          }
         }
       } catch (err) {
+        if (!fileStatusesRef.current.some((f) => f.id === id)) {
+          return;
+        }
         dispatch({
           type: "SET_ERROR",
           id,
           error: shapeError(err as TError, shapeUploadError),
         });
         if (autoRetry) {
-          const timeoutId = scheduleRetry(
+          scheduleRetry(
             id,
             file,
             fileStatusesRef,
             maxRetryCount,
             isMountedRef,
+            pendingTimeoutsRef,
             uploadFile
           );
-          if (timeoutId) {
-            pendingTimeoutsRef.current.add(timeoutId);
-          }
         }
       } finally {
         uploadingRef.current.delete(id);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onDropFile, autoRetry, maxRetryCount, onFileUploaded, shapeUploadError]
+    [
+      onDropFile,
+      autoRetry,
+      maxRetryCount,
+      onFileUploaded,
+      shapeUploadError,
+      dispatch,
+    ]
   );
 
   const handleDrop = useCallback(
@@ -333,15 +388,18 @@ export function useDropzone<TResult = any, TError = any>({
       setRootError(undefined);
 
       if (rejectedFiles.length > 0) {
-        const firstError = rejectedFiles[0].errors[0];
-        const message = formatRejectionError(firstError, validation.maxSize);
+        const firstRejection = rejectedFiles[0];
+        const firstError = firstRejection.errors[0];
+        const message =
+          shapeRejectionError?.(firstRejection) ??
+          formatRejectionError(firstError, validation.maxSize);
         setRootError(message);
         onRootError?.(message);
         return;
       }
 
       const newFiles = acceptedFiles.map((file) => ({
-        id: `${Date.now()}-${file.name}-${Math.random()}`,
+        id: createFileId(file),
         file,
       }));
 
@@ -367,23 +425,37 @@ export function useDropzone<TResult = any, TError = any>({
       }
 
       for (const { id, file } of newFiles) {
-        uploadFile(id, file);
+        if (fileStatusesRef.current.some((status) => status.id === id)) {
+          uploadFile(id, file);
+        }
       }
     },
-    [validation, shiftOnMaxFiles, onRootError, uploadFile]
+    [
+      validation,
+      shiftOnMaxFiles,
+      onRootError,
+      uploadFile,
+      dispatch,
+      shapeRejectionError,
+    ]
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useReactDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useReactDropzone({
     onDrop: handleDrop,
     accept: validation.accept,
     minSize: validation.minSize,
     maxSize: validation.maxSize,
-    maxFiles: validation.maxFiles,
+    maxFiles: shiftOnMaxFiles ? undefined : validation.maxFiles,
+    noClick: true,
   });
 
-  const onRemove = useCallback((id: string) => {
-    dispatch({ type: "REMOVE_FILE", id });
-  }, []);
+  const onRemove = useCallback(
+    (id: string) => {
+      uploadingRef.current.delete(id);
+      dispatch({ type: "REMOVE_FILE", id });
+    },
+    [dispatch]
+  );
 
   const onRetry = useCallback(
     (id: string) => {
@@ -397,8 +469,11 @@ export function useDropzone<TResult = any, TError = any>({
   );
 
   const clearAll = useCallback(() => {
+    clearRetryTimeouts(pendingTimeoutsRef);
+    uploadingRef.current.clear();
     dispatch({ type: "CLEAR_ALL" });
-  }, []);
+    setRootError(undefined);
+  }, [dispatch]);
 
   const canRetry = useCallback(
     (id: string) => {
@@ -408,6 +483,14 @@ export function useDropzone<TResult = any, TError = any>({
     },
     [maxRetryCount]
   );
+
+  const retryFailed = useCallback(() => {
+    for (const file of fileStatusesRef.current) {
+      if (file.status === "error" && file.tries < maxRetryCount) {
+        uploadFile(file.id, file.file);
+      }
+    }
+  }, [maxRetryCount, uploadFile]);
 
   return {
     fileStatuses,
@@ -420,7 +503,10 @@ export function useDropzone<TResult = any, TError = any>({
     onRetry,
     clearAll,
     canRetry,
-    shapeUploadError,
+    open,
+    retryFailed,
+    removeFile: onRemove,
+    retryFile: onRetry,
   };
 }
 
@@ -428,27 +514,46 @@ export function useDropzone<TResult = any, TError = any>({
 // Context
 // ---------------------------------------------------------------------------
 
-const DropzoneContext = createContext<ReturnType<typeof useDropzone> | null>(
-  null
-);
+export type DropzoneContextValue = ReturnType<
+  typeof useDropzone<unknown, unknown>
+>;
 
-export const Dropzone = ({
+const DropzoneContext = createContext<DropzoneContextValue | null>(null);
+
+export function Dropzone<TResult = unknown, TError = unknown>({
   children,
   ...hookReturn
-}: ReturnType<typeof useDropzone> & { children: ReactNode }) => (
-  <DropzoneContext.Provider value={hookReturn}>
-    {children}
-  </DropzoneContext.Provider>
-);
+}: ReturnType<typeof useDropzone<TResult, TError>> & { children: ReactNode }) {
+  return (
+    <DropzoneContext.Provider value={hookReturn as DropzoneContextValue}>
+      {children}
+    </DropzoneContext.Provider>
+  );
+}
 Dropzone.displayName = "Dropzone";
 
-const useDropzoneContext = () => {
+export function DropzoneProvider({
+  children,
+  value,
+}: {
+  children: ReactNode;
+  value: DropzoneContextValue;
+}) {
+  return (
+    <DropzoneContext.Provider value={value}>
+      {children}
+    </DropzoneContext.Provider>
+  );
+}
+DropzoneProvider.displayName = "DropzoneProvider";
+
+export function useDropzoneContext() {
   const ctx = useContext(DropzoneContext);
   if (!ctx) {
     throw new Error("Dropzone subcomponents must be used within <Dropzone>");
   }
   return ctx;
-};
+}
 
 // ---------------------------------------------------------------------------
 // Subcomponents
@@ -500,55 +605,70 @@ export function DropZoneArea({
     ),
     ...props,
   });
+  const rootRef = (rootProps as { ref?: Ref<HTMLDivElement> }).ref;
+  const areaProps = {
+    ...rootProps,
+    ref: composeRefs(rootRef, ref),
+  };
 
   // 1. Base UI render prop – function form
   if (typeof render === "function") {
-    return render({ ...rootProps, ref });
+    return render(areaProps);
   }
 
   // 2. Base UI render prop – element form
   if (render && isValidElement(render)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // biome-ignore lint/suspicious/noExplicitAny: flexible child element types
-    return cloneElement(render as ReactElement<any>, rootProps);
+    return cloneElement(render as ReactElement<unknown>, areaProps);
   }
 
   // 3. Radix UI asChild pattern
   if (asChild && isValidElement(children)) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // biome-ignore lint/suspicious/noExplicitAny: flexible child element types
-    const child = children as ReactElement<any>;
-    return cloneElement(child, rootProps);
+    const child = children as ReactElement<unknown>;
+    return cloneElement(child, areaProps);
   }
 
   // 4. Default: plain div
-  return (
-    <div ref={ref} {...rootProps}>
-      {children}
-    </div>
-  );
+  return <div {...areaProps}>{children}</div>;
 }
 DropZoneArea.displayName = "DropZoneArea";
 
 export function DropzoneTrigger({
   className,
   children,
+  disabled,
+  onClick,
   ref,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   ref?: Ref<HTMLButtonElement>;
 }) {
-  const { getInputProps } = useDropzoneContext();
+  const { getInputProps, open } = useDropzoneContext();
+  const handleClick = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      onClick?.(event);
+      if (event.defaultPrevented || disabled) {
+        return;
+      }
+      event.stopPropagation();
+      open();
+    },
+    [disabled, onClick, open]
+  );
+
   return (
-    <Button
-      className={cn("cursor-pointer", className)}
-      ref={ref}
-      type="button"
-      {...props}
-    >
+    <>
       <input {...getInputProps()} />
-      {children}
-    </Button>
+      <button
+        className={cn("cursor-pointer", className)}
+        disabled={disabled}
+        onClick={handleClick}
+        ref={ref}
+        type="button"
+        {...props}
+      >
+        {children}
+      </button>
+    </>
   );
 }
 DropzoneTrigger.displayName = "DropzoneTrigger";
