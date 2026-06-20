@@ -35,7 +35,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Build MCP package
-        run: pnpm --filter @shelf-ui/mcp build
+        run: pnpm --filter shelf-ui-mcp build
 
       - name: Create Release Pull Request or Publish
         id: changesets

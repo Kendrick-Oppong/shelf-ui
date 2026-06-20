@@ -1,5 +1,5 @@
 {
-  "name": "@shelf-ui/mcp",
+  "name": "shelf-ui-mcp",
   "version": "0.2.0",
   "description": "Model Context Protocol (MCP) server for Shelf UI – search components, get install commands, and fetch component schemas from the Shelf UI registry.",
   "main": "dist/index.js",

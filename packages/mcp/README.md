@@ -1,4 +1,4 @@
-# @shelf-ui/mcp
+# shelf-ui-mcp
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for [Shelf UI](https://shelf-ui.vercel.app) — gives AI tools like Cursor, Claude Desktop, and Windsurf direct access to the Shelf UI component registry.
 
@@ -22,7 +22,7 @@ Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
   "mcpServers": {
     "shelf-ui": {
       "command": "npx",
-      "args": ["-y", "@shelf-ui/mcp"]
+      "args": ["-y", "shelf-ui-mcp"]
     }
   }
 }
@@ -37,7 +37,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
   "mcpServers": {
     "shelf-ui": {
       "command": "npx",
-      "args": ["-y", "@shelf-ui/mcp"]
+      "args": ["-y", "shelf-ui-mcp"]
     }
   }
 }
@@ -52,7 +52,7 @@ Add to your Windsurf MCP settings:
   "mcpServers": {
     "shelf-ui": {
       "command": "npx",
-      "args": ["-y", "@shelf-ui/mcp"]
+      "args": ["-y", "shelf-ui-mcp"]
     }
   }
 }
