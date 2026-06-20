@@ -1,4 +1,4 @@
-# shelf-ui-mcp
+# @shelf-ui/mcp
 
 ## 0.2.0
 
