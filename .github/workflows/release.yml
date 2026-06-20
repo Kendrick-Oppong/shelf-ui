@@ -30,8 +30,15 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - run: pnpm install --frozen-lockfile
+
+      - name: Configure npm authentication
+        run: npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build MCP package
         run: pnpm --filter shelf-ui-mcp build
