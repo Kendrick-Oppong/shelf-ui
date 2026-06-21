@@ -1,5 +1,11 @@
 # @shelf-ui/mcp
 
+## 0.2.1
+
+### Patch Changes
+
+- 6b5a1cb: Updated README documentation with simplified IDE connection instructions
+
 ## 0.2.0
 
 ### Minor Changes
