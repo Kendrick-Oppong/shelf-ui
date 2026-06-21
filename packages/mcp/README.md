@@ -15,18 +15,12 @@ Once connected, your AI assistant can:
 
 ### Cursor
 
-Add to `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project):
-
-```json
-{
-  "mcpServers": {
-    "shelf-ui": {
-      "command": "npx",
-      "args": ["-y", "@shelf-ui/mcp"]
-    }
-  }
-}
-```
+The easiest way to install it in Cursor is through the UI:
+1. Open **Cursor Settings** > **Features** > **MCP Servers**
+2. Click **+ Add New MCP Server**
+3. Name: `shelf-ui`
+4. Type: `command`
+5. Command: `npx -y @shelf-ui/mcp`
 
 ### Claude Desktop
 
@@ -46,6 +40,21 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 ### Windsurf
 
 Add to your Windsurf MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "shelf-ui": {
+      "command": "npx",
+      "args": ["-y", "@shelf-ui/mcp"]
+    }
+  }
+}
+```
+
+### Other IDEs
+
+Any MCP-compatible client can connect using:
 
 ```json
 {

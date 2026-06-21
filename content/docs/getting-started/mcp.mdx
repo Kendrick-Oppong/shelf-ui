@@ -1,18 +1,9 @@
 ---
 title: MCP Server
 description: Connect Shelf UI to AI assistants via the Model Context Protocol — so your assistant can query components, generate install commands, and browse the registry directly.
-badge: Soon
 ---
 
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
-import { Callout } from "fumadocs-ui/components/callout";
-
-<Callout type="info" title="Not yet on NPM">
-  The `@shelf-ui/mcp` package is built and ready, but has not been published to
-  NPM yet. It will be available once the first components are registered. In the
-  meantime, use the [Skills](/docs/skills) page to give your AI assistant Shelf
-  UI context today.
-</Callout>
 
 The Shelf UI MCP (Model Context Protocol) server exposes the component registry as structured, queryable tools. Once connected, your AI assistant can browse components, get install commands, and read prop documentation without leaving your editor.
 
@@ -29,39 +20,33 @@ The Shelf UI MCP (Model Context Protocol) server exposes the component registry 
 
 ## Connecting your AI assistant
 
-Once published, add the following to your AI assistant's MCP config. No API key required — the server reads from the public Shelf UI registry at `https://shelf-ui.vercel.app/r`.
+Add the following to your AI assistant's MCP config. No API key required — the server reads directly from the public Shelf UI registry at `https://shelf-ui.vercel.app/r`.
 
-<Tabs items={["Claude Desktop", "Cursor", "Windsurf", "Other"]}>
-  <Tab value="Claude Desktop">
-    Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
-
-    ```json
-    {
-      "mcpServers": {
-        "shelf-ui": {
-          "command": "npx",
-          "args": ["-y", "@shelf-ui/mcp"]
-        }
-      }
-    }
-    ```
-  </Tab>
+<Tabs items={["Cursor", "Windsurf", "Claude Desktop", "Other"]}>
   <Tab value="Cursor">
-    Add to `.cursor/mcp.json` in your project root:
-
-    ```json
-    {
-      "mcpServers": {
-        "shelf-ui": {
-          "command": "npx",
-          "args": ["-y", "@shelf-ui/mcp"]
-        }
-      }
-    }
-    ```
+    The easiest way is through the Cursor UI:
+    1. Open **Cursor Settings** > **Features** > **MCP Servers**
+    2. Click **+ Add New MCP Server**
+    3. Name: `shelf-ui`
+    4. Type: `command`
+    5. Command: `npx -y @shelf-ui/mcp`
   </Tab>
   <Tab value="Windsurf">
     Add to `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "shelf-ui": {
+          "command": "npx",
+          "args": ["-y", "@shelf-ui/mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab value="Claude Desktop">
+    Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
     ```json
     {
@@ -90,17 +75,6 @@ Once published, add the following to your AI assistant's MCP config. No API key 
   </Tab>
 </Tabs>
 
-## Supported package managers
-
-The `get_install_command` tool generates the correct command for your package manager:
-
-| Package Manager | Command format                                      |
-| --------------- | --------------------------------------------------- |
-| npm             | `npx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json`   |
-| pnpm            | `pnpm dlx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json` |
-| yarn            | `yarn dlx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json` |
-| bun             | `bunx shadcn@latest add https://shelf-ui.vercel.app/r/[name].json`  |
-
 ## Example tool calls
 
 When connected, you can ask your assistant natural language questions:
@@ -116,8 +90,4 @@ The assistant will call `get_install_command({ name: "dropzone", packageManager:
 > *"What storage adapters does Shelf UI support?"*
 
 The assistant will call `list_adapters` and return a list of all supported backends (Firebase Storage, Supabase, AWS S3, Cloudinary, Azure Blob, ImageKit, Uploadthing).
-
-## In the meantime
-
-While the MCP server is awaiting publication, use the [Skills](/docs/skills) page to give your AI assistant full Shelf UI context via a file-based approach that works today with Cursor, Claude Code, Windsurf, Antigravity, and GitHub Copilot.
 
