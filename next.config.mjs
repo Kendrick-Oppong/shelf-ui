@@ -26,7 +26,7 @@ const config = {
       {
         source: "/docs/adapters",
         destination: "/docs/adapters/supabase",
-        // permanent: true,
+        permanent: true,
       },
     ];
   },
