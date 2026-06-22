@@ -61,6 +61,7 @@ bunx shadcn@latest add @shelf-ui/file-card
 
 <DemoWithCode src="components/examples/file-card/basic/file-card-basic-demo.tsx">
   <FileCardBasicDemo />
+
 </DemoWithCode>
 
 <Callout type="info">
@@ -71,15 +72,22 @@ bunx shadcn@latest add @shelf-ui/file-card
 
 ```text
 FileCard (root + context provider)
-├── FileCardPreview    (thumbnail or status icon)
-├── FileCardInfo        (filename + size, or error message)
-├── FileCardProgress    (progress bar — pending / success / error)
-├── FileCardActions     (retry + remove button group, extendable via children)
-├── FileCardRetryButton (standalone retry button)
-└── FileCardRemoveButton (standalone remove button)
+├── FileCardPreview         (thumbnail or type/status icon)
+├── FileCardInfo             (classic layout: filename + size/error)
+│   ├── FileCardFileName     (standalone filename)
+│   └── FileCardFileSize     (standalone formatted size)
+├── FileCardProgress         (progress bar — pending / success / error)
+├── FileCardActions          (retry/remove button group)
+│   ├── FileCardCopyButton     (copies result URL on success)
+│   └── FileCardDownloadButton (download link on success)
+├── FileCardStatusText       (inline status: "Uploading / Completed / Failed")
+├── FileCardTypeIcon         (standalone file type icon: PDF, Video, Image, etc)
+├── FileCardStatusIcon       (standalone status icon: Loader, Check, Alert)
+├── FileCardRetryButton      (standalone retry button)
+└── FileCardRemoveButton     (standalone remove button)
 ```
 
-Every subcomponent is optional and order is up to you. Omit `FileCardProgress` for a compact row, drop `FileCardPreview` if thumbnails aren't useful for your file types, or rearrange `FileCardActions` to the left for a different layout.
+Every subcomponent is optional and order is up to you. Omit `FileCardProgress` for a compact row, drop `FileCardPreview` if thumbnails aren't useful for your file types, or use the granular components (`FileCardFileName`, `FileCardFileSize`, etc.) to build entirely custom layouts.
 
 ### With a progress bar
 
@@ -91,14 +99,18 @@ The default queue row pairs `FileCardPreview`, `FileCardInfo`, `FileCardProgress
 
 ```tsx
 <FileCard fileStatus={status} onRemove={...} onRetry={...} canRetry={...}>
-  <FileCardPreview />
-  <FileCardInfo />
+  <div className="flex w-full items-center gap-3">
+    <FileCardPreview />
+    <FileCardInfo />
+    <FileCardActions />
+  </div>
   <FileCardProgress />
-  <FileCardActions />
 </FileCard>
 ```
 
 ### Compact, no progress bar
+
+A slimmer layout suitable for sidebars or tight spaces. This layout relies on granular subcomponents like `FileCardFileName` and `FileCardStatusText` to fit more metadata inline without needing multiple rows.
 
 <DemoWithCode src="components/examples/file-card/layouts/file-card-compact-demo.tsx">
   <FileCardCompactDemo />
@@ -114,9 +126,11 @@ The default queue row pairs `FileCardPreview`, `FileCardInfo`, `FileCardProgress
 
 ```tsx
 <FileCard fileStatus={status} onRemove={...} onRetry={...} canRetry={...}>
-  <FileCardPreview showImageThumbnail />
-  <FileCardInfo />
-  <FileCardActions />
+  <div className="flex w-full items-center gap-3">
+    <FileCardPreview showImageThumbnail />
+    <FileCardInfo />
+    <FileCardActions />
+  </div>
 </FileCard>
 ```
 
@@ -168,10 +182,12 @@ If you need total control over the action layout, use `FileCardRetryButton` and 
 
 ```tsx
 <FileCard fileStatus={status} onRemove={...} onRetry={...} canRetry={...}>
-  <FileCardInfo />
-  <div className="ml-auto flex items-center gap-1">
-    {status.status === "error" && <FileCardRetryButton size="icon-sm" />}
-    <FileCardRemoveButton size="icon-sm" />
+  <div className="flex w-full items-center gap-3">
+    <FileCardInfo />
+    <div className="ml-auto flex shrink-0 items-center gap-1">
+      {status.status === "error" && <FileCardRetryButton size="icon-sm" />}
+      <FileCardRemoveButton size="icon-sm" />
+    </div>
   </div>
 </FileCard>
 ```
@@ -206,6 +222,38 @@ Shows the formatted file size by default, or the error message when `status === 
 
 No props beyond standard `div` attributes. Reads `status` from context — renders an indeterminate animated bar while `"pending"`, a filled bar on `"success"`, and a destructive-colored bar on `"error"`.
 
+### `FileCardFileName`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `maxLength` | `number` | `28` | Characters before the filename is truncated with an ellipsis (extension preserved). |
+
+### `FileCardFileSize`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| — | — | — | Standalone formatted file size text. No props beyond standard `span` attributes. |
+
+### `FileCardStatusText`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| — | — | — | Inline status text ("Uploading...", "Completed", or the error message). No props beyond standard `span` attributes. |
+
+### `FileCardTypeIcon` / `FileCardStatusIcon`
+
+| Component | Description |
+|-----------|-------------|
+| `FileCardTypeIcon` | Standalone file type icon (PDF, Video, Image, Archive, etc) based on the file type. |
+| `FileCardStatusIcon` | Standalone status icon (Loader, Check, Alert) based on the upload status. |
+
+### `FileCardCopyButton` / `FileCardDownloadButton`
+
+| Component | Description |
+|-----------|-------------|
+| `FileCardCopyButton` | Copies the URL to the clipboard. Automatically hides if `status.result` is empty. |
+| `FileCardDownloadButton` | Provides a direct download link. Automatically hides if `status.result` is empty. |
+
 ### `FileCardActions`
 
 | Prop | Type | Default | Description |
@@ -216,7 +264,9 @@ No props beyond standard `div` attributes. Reads `status` from context — rende
 
 ### `FileCardRetryButton` / `FileCardRemoveButton`
 
-Standalone action buttons for custom layouts. Both accept the same props as the Shelf UI `Button` component. If you pass your own `onClick`, the context action still runs unless you call `event.preventDefault()`.
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `...props` | `ButtonProps` | — | Standalone action buttons for custom layouts. Both accept the same props as the Shelf UI `Button` component. |
 
 ### Utilities
 
