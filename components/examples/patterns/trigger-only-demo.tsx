@@ -19,10 +19,10 @@ import { Button } from "@/components/ui/button";
 
 async function fakeUpload(_file: File) {
   await new Promise((resolve) => setTimeout(resolve, 800));
-  return { status: "success" as const };
+  return { status: "success" as const, result: undefined };
 }
 
-function AttachmentPreview({ file }: { file: File }) {
+function AttachmentPreview({ file }: Readonly<{ file: File }>) {
   const objectUrl = useFileObjectUrl(
     file.type.startsWith("image/") ? file : undefined
   );
@@ -56,7 +56,7 @@ export function TriggerOnlyDemo() {
   return (
     <div className="w-full max-w-md space-y-3">
       {/* Simulated chat / form input surface with enhanced styling */}
-      <div className="overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/20 shadow-lg transition-shadow duration-200 hover:shadow-xl">
+      <div className="overflow-hidden rounded-xl border bg-linear-to-br from-background to-muted/20 shadow-lg transition-shadow duration-200 hover:shadow-xl">
         {/* Input area */}
         <div className="min-h-24 p-4">
           <p className="select-none text-muted-foreground/50 text-sm">
