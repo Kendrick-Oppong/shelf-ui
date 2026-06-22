@@ -67,6 +67,7 @@ export default function RootLayout({
   return (
     <html
       className={`${fontSans.variable} ${courier.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >
