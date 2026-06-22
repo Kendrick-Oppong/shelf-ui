@@ -1,6 +1,7 @@
 ---
 title: Dropzone
 description: A headless drag-and-drop zone with upload state management, validation, and retry logic.
+icon: CloudUpload
 ---
 
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
@@ -110,9 +111,9 @@ function UploadComponent() {
         <DropzoneTrigger>Upload files</DropzoneTrigger>
       </DropZoneArea>
       {dropzone.fileStatuses.map((status) => (
-         <FileCard 
-           key={status.id} 
-           fileStatus={status} 
+         <FileCard
+           key={status.id}
+           fileStatus={status}
            onRemove={() => handleRemove(status.id, status.result)}
            // dropzone.onRetry already automatically calls your onDropFile API again!
            onRetry={() => dropzone.onRetry(status.id)}
@@ -296,7 +297,7 @@ Dropzone (Provider)
 
 ### When to use `asChild` or `render`
 
-`asChild` (Radix UI) and the `render` prop (Base UI) exist for one specific situation: you need to **eliminate the wrapper `<div>` entirely** so that your element directly receives the drag handlers. 
+`asChild` (Radix UI) and the `render` prop (Base UI) exist for one specific situation: you need to **eliminate the wrapper `<div>` entirely** so that your element directly receives the drag handlers.
 
 If neither applies, stick with the default.
 
