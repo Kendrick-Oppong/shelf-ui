@@ -22,8 +22,7 @@ pnpm dev
 
 ## Adding a New Component
 
-- [ ] Create `components/shelf-ui/component-name.radix.tsx`
-- [ ] Create `components/shelf-ui/component-name.base.tsx` (if it uses interactive primitives)
+- [ ] Create `components/shelf-ui/component-name.tsx`
 - [ ] Create `components/shelf-ui/examples/component-name-demo.tsx`
 - [ ] Add entry to `registry.json`
 - [ ] Run `pnpm registry:build` and `pnpm registry:check`
