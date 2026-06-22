@@ -33,7 +33,7 @@ async function uploadDocument(file: File) {
 
   return {
     status: "success" as const,
-    result: `/uploads/${encodeURIComponent(file.name)}`,
+    result: undefined,
   };
 }
 
@@ -125,12 +125,14 @@ export function DropzoneMultipleFilesDemo() {
                 onRemove={() => dropzone.onRemove(status.id)}
                 onRetry={() => dropzone.onRetry(status.id)}
               >
-                <FileCardPreview showImageThumbnail />
-                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                  <FileCardInfo />
-                  <FileCardProgress />
+                <div className="flex w-full items-start gap-3">
+                  <FileCardPreview showImageThumbnail />
+                  <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                    <FileCardInfo />
+                    <FileCardProgress />
+                  </div>
+                  <FileCardActions />
                 </div>
-                <FileCardActions />
               </FileCard>
             ))}
           </div>
