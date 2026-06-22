@@ -100,7 +100,7 @@ function getFileCategory(mimeType: string): FileCategory {
 /**
  * Creates an object URL for a File and revokes it automatically when the
  * file changes or the component unmounts. Returns null until the file is
- * ready (effectively immediate, but keeps the hook SSR-safe)
+ * ready (effectively immediate)
  */
 export function useFileObjectUrl(file: File | undefined): string | null {
   const [url, setUrl] = useState<string | null>(null);
