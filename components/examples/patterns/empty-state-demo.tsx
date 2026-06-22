@@ -108,9 +108,11 @@ export function EmptyStateDemo() {
                     animation: `slideInRight 0.3s ease-out ${index * 0.1}s both`,
                   }}
                 >
-                  <FileCardInfo />
+                  <div className="flex w-full items-center gap-3">
+                    <FileCardInfo />
+                    <FileCardActions />
+                  </div>
                   <FileCardProgress />
-                  <FileCardActions />
                 </FileCard>
               ))}
             </div>
