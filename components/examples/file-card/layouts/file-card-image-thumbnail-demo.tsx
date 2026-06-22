@@ -34,7 +34,6 @@ function useImageStatuses(): FileStatus[] {
     {
       id: "cover",
       file: createSvgFile("cover-image.svg", ["#f59e0b", "#ef4444"]),
-      result: "/uploads/cover-image.svg",
       status: "success",
       tries: 1,
     },
@@ -72,12 +71,14 @@ export function FileCardImageThumbnailDemo() {
             canRetry={status.tries < 3}
             fileStatus={status}
             key={status.id}
-            onRemove={() => undefined}
-            onRetry={() => undefined}
+            onRemove={() => {}}
+            onRetry={() => {}}
           >
-            <FileCardPreview showImageThumbnail />
-            <FileCardInfo />
-            <FileCardActions />
+            <div className="flex w-full items-center gap-3">
+              <FileCardPreview showImageThumbnail />
+              <FileCardInfo />
+              <FileCardActions />
+            </div>
           </FileCard>
         ))}
       </div>
