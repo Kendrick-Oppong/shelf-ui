@@ -14,23 +14,31 @@ import { Badge } from "@/components/ui/badge";
 function useMixedFileStatuses(): FileStatus[] {
   const [statuses] = useState<FileStatus[]>(() => [
     {
-      file: new File([""], "brand-guidelines.pdf", {
-        type: "application/pdf",
-      }),
+      file: new File(
+        [new ArrayBuffer(1024 * 1024 * 3.5)],
+        "brand-guidelines.pdf",
+        {
+          type: "application/pdf",
+        }
+      ),
       id: "brand-guidelines",
       result: "/uploads/brand-guidelines.pdf",
       status: "success",
       tries: 1,
     },
     {
-      file: new File([""], "launch-cut.mp4", { type: "video/mp4" }),
+      file: new File([new ArrayBuffer(1024 * 1024 * 45)], "launch-cut.mp4", {
+        type: "video/mp4",
+      }),
       id: "launch-cut",
       status: "pending",
       tries: 1,
     },
     {
       error: "Archive contains an unsupported file.",
-      file: new File([""], "assets.zip", { type: "application/zip" }),
+      file: new File([new ArrayBuffer(1024 * 1024 * 1.2)], "assets.zip", {
+        type: "application/zip",
+      }),
       id: "assets",
       status: "error",
       tries: 2,
@@ -75,15 +83,17 @@ export function FileCardCustomPreviewDemo() {
             canRetry={status.tries < 3}
             fileStatus={status}
             key={status.id}
-            onRemove={() => undefined}
-            onRetry={() => undefined}
+            onRemove={() => {}}
+            onRetry={() => {}}
           >
-            <FileCardPreview
-              className="bg-muted/70"
-              renderPreview={FileTypePreview}
-            />
-            <FileCardInfo />
-            <FileCardActions />
+            <div className="flex w-full items-center gap-3">
+              <FileCardPreview
+                className="bg-muted/70"
+                renderPreview={FileTypePreview}
+              />
+              <FileCardInfo />
+              <FileCardActions />
+            </div>
           </FileCard>
         ))}
       </div>
