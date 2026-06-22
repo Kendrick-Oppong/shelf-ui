@@ -79,8 +79,10 @@ export function DocumentsOnlyQueueDemo() {
               onRemove={() => dropzone.onRemove(status.id)}
               onRetry={() => dropzone.onRetry(status.id)}
             >
-              <FileCardInfo maxNameLength={36} />
-              <FileCardActions />
+              <div className="flex w-full items-center gap-3">
+                <FileCardInfo maxNameLength={36} />
+                <FileCardActions />
+              </div>
             </FileCard>
           ))}
           <Button
