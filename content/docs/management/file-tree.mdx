@@ -1,0 +1,41 @@
+---
+title: FileTree
+description: A recursive folder and file browser with expand/collapse, keyboard navigation, and selection.
+icon: FolderTree
+badge: Soon
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Callout type="warn">
+  This component is coming soon.
+</Callout>
+
+`FileTree` renders a recursive tree of folders and files. It handles expand/collapse state, keyboard navigation, and optional single or multi-selection — without imposing any storage or data-fetching opinion.
+
+## Planned API
+
+```tsx
+<FileTree
+  nodes={[
+    {
+      id: "docs",
+      name: "docs",
+      type: "folder",
+      children: [
+        { id: "readme", name: "README.md", type: "file" },
+        { id: "guide", name: "guide.pdf", type: "file" },
+      ],
+    },
+    { id: "logo", name: "logo.svg", type: "file" },
+  ]}
+  onSelect={(node) => console.log(node)}
+/>
+```
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `nodes` | `TreeNode[]` | The root-level nodes. Each node has `id`, `name`, `type` (`"file"` or `"folder"`), and optional `children`. |
+| `onSelect` | `(node: TreeNode) => void` | Called when a node is clicked. |
+| `defaultExpanded` | `string[]` | IDs of folders to expand on first render. |
+| `selected` | `string` | ID of the currently selected node (controlled). |
