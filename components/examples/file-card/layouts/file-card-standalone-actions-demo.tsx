@@ -15,14 +15,16 @@ function useFailedFiles(): FileStatus[] {
   const [statuses] = useState<FileStatus[]>(() => [
     {
       error: "Connection timed out.",
-      file: new File([""], "board-deck.pdf", { type: "application/pdf" }),
+      file: new File([new ArrayBuffer(1024 * 1024 * 15.2)], "board-deck.pdf", {
+        type: "application/pdf",
+      }),
       id: "board-deck",
       status: "error",
       tries: 1,
     },
     {
       error: "Upload token expired.",
-      file: new File([""], "budget.xlsx", {
+      file: new File([new ArrayBuffer(1024 * 510)], "budget.xlsx", {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       }),
       id: "budget",
@@ -50,20 +52,22 @@ export function FileCardStandaloneActionsDemo() {
             canRetry={status.tries < 3}
             fileStatus={status}
             key={status.id}
-            onRemove={() => undefined}
-            onRetry={() => undefined}
+            onRemove={() => {}}
+            onRetry={() => {}}
           >
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-destructive/10">
-              <AlertCircle className="size-4 text-destructive" />
-            </div>
-            <FileCardInfo maxNameLength={34} />
-            <div className="ml-auto flex shrink-0 items-center gap-1">
-              <FileCardRetryButton size="icon-sm">
-                <RotateCcw className="size-3.5" />
-              </FileCardRetryButton>
-              <FileCardRemoveButton size="icon-sm">
-                <X className="size-3.5" />
-              </FileCardRemoveButton>
+            <div className="flex w-full items-center gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-destructive/10">
+                <AlertCircle className="size-4 text-destructive" />
+              </div>
+              <FileCardInfo maxNameLength={34} />
+              <div className="ml-auto flex shrink-0 items-center gap-1">
+                <FileCardRetryButton size="icon-sm">
+                  <RotateCcw className="size-3.5" />
+                </FileCardRetryButton>
+                <FileCardRemoveButton size="icon-sm">
+                  <X className="size-3.5" />
+                </FileCardRemoveButton>
+              </div>
             </div>
           </FileCard>
         ))}
