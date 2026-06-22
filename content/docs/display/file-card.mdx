@@ -1,0 +1,291 @@
+---
+title: FileCard
+description: A composable row for displaying a single file's upload status, progress, and actions.
+icon: FileText
+---
+
+import { Tabs, Tab } from "fumadocs-ui/components/tabs";
+import { Callout } from "fumadocs-ui/components/callout";
+import { DemoWithCode } from "@/components/docs/demo-with-code";
+import { FileCardBasicDemo } from "@/components/examples/file-card/basic/file-card-basic-demo";
+import { FileCardCompactDemo } from "@/components/examples/file-card/layouts/file-card-compact-demo";
+import { FileCardCustomPreviewDemo } from "@/components/examples/file-card/layouts/file-card-custom-preview-demo";
+import { FileCardExtraActionsDemo } from "@/components/examples/file-card/layouts/file-card-extra-actions-demo";
+import { FileCardImageThumbnailDemo } from "@/components/examples/file-card/layouts/file-card-image-thumbnail-demo";
+import { FileCardStandaloneActionsDemo } from "@/components/examples/file-card/layouts/file-card-standalone-actions-demo";
+
+<Callout type="info">
+  `FileCard` pairs with [`Dropzone`](/docs/uploads/dropzone) — map it over `dropzone.fileStatuses` to build a queue. There is no separate list component to install; a plain `.map()` is the queue.
+</Callout>
+
+## Dependencies
+
+- **`lucide-react`** — Icons for status, retry, and remove actions.
+- **`@/components/shelf-ui/dropzone`** — `FileCard` reads the `FileStatus` and `UploadStatus` types from the Dropzone component.
+
+## Installation
+
+<Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
+  <Tab value="npm">
+
+```bash title="terminal"
+npx shadcn@latest add @shelf-ui/file-card
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash title="terminal"
+pnpm dlx shadcn@latest add @shelf-ui/file-card
+```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash title="terminal"
+yarn dlx shadcn@latest add @shelf-ui/file-card
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash title="terminal"
+bunx shadcn@latest add @shelf-ui/file-card
+```
+
+  </Tab>
+</Tabs>
+
+## Usage
+
+`FileCard` is a compound component — the root provides context, and you choose which pieces to render and in what order. Map it over `dropzone.fileStatuses` to render the queue; there's no separate list component because the loop itself is the entire "queue."
+
+<DemoWithCode src="components/examples/file-card/basic/file-card-basic-demo.tsx">
+  <FileCardBasicDemo />
+
+</DemoWithCode>
+
+<Callout type="info">
+  For large queues (dozens of files re-rendering frequently), wrap `onRemove`/`onRetry` in `useCallback` in the parent. `FileCard`'s internal context is memoized, but inline arrow functions created fresh on every render still defeat that memoization. See [Performance](#performance).
+</Callout>
+
+## Composition
+
+```text
+FileCard (root + context provider)
+├── FileCardPreview         (thumbnail or type/status icon)
+├── FileCardInfo             (classic layout: filename + size/error)
+│   ├── FileCardFileName     (standalone filename)
+│   └── FileCardFileSize     (standalone formatted size)
+├── FileCardProgress         (progress bar — pending / success / error)
+├── FileCardActions          (retry/remove button group)
+│   ├── FileCardCopyButton     (copies result URL on success)
+│   └── FileCardDownloadButton (download link on success)
+├── FileCardStatusText       (inline status: "Uploading / Completed / Failed")
+├── FileCardTypeIcon         (standalone file type icon: PDF, Video, Image, etc)
+├── FileCardStatusIcon       (standalone status icon: Loader, Check, Alert)
+├── FileCardRetryButton      (standalone retry button)
+└── FileCardRemoveButton     (standalone remove button)
+```
+
+Every subcomponent is optional and order is up to you. Omit `FileCardProgress` for a compact row, drop `FileCardPreview` if thumbnails aren't useful for your file types, or use the granular components (`FileCardFileName`, `FileCardFileSize`, etc.) to build entirely custom layouts.
+
+### With a progress bar
+
+The default queue row pairs `FileCardPreview`, `FileCardInfo`, `FileCardProgress`, and `FileCardActions`.
+
+<DemoWithCode src="components/examples/file-card/basic/file-card-basic-demo.tsx">
+  <FileCardBasicDemo />
+</DemoWithCode>
+
+```tsx
+<FileCard fileStatus={status} onRemove={...} onRetry={...} canRetry={...}>
+  <div className="flex w-full items-center gap-3">
+    <FileCardPreview />
+    <FileCardInfo />
+    <FileCardActions />
+  </div>
+  <FileCardProgress />
+</FileCard>
+```
+
+### Compact, no progress bar
+
+A slimmer layout suitable for sidebars or tight spaces. This layout relies on granular subcomponents like `FileCardFileName` and `FileCardStatusText` to fit more metadata inline without needing multiple rows.
+
+<DemoWithCode src="components/examples/file-card/layouts/file-card-compact-demo.tsx">
+  <FileCardCompactDemo />
+</DemoWithCode>
+
+### Image thumbnails
+
+`FileCardPreview` shows a generic status icon by default. Pass `showImageThumbnail` to render an actual image preview for image files. The underlying object URL is created and revoked automatically — no manual cleanup needed.
+
+<DemoWithCode src="components/examples/file-card/layouts/file-card-image-thumbnail-demo.tsx">
+  <FileCardImageThumbnailDemo />
+</DemoWithCode>
+
+```tsx
+<FileCard fileStatus={status} onRemove={...} onRetry={...} canRetry={...}>
+  <div className="flex w-full items-center gap-3">
+    <FileCardPreview showImageThumbnail />
+    <FileCardInfo />
+    <FileCardActions />
+  </div>
+</FileCard>
+```
+
+### Custom preview (file-type icons, video posters, etc.)
+
+For file types beyond images — PDFs, videos, archives — pass `renderPreview` to take full control of what's shown. Return `null` or `undefined` to fall back to `showImageThumbnail` or the default status icon for that file.
+
+<DemoWithCode src="components/examples/file-card/layouts/file-card-custom-preview-demo.tsx">
+  <FileCardCustomPreviewDemo />
+</DemoWithCode>
+
+```tsx
+<FileCardPreview
+  renderPreview={(file, status) => {
+    if (file.type === "application/pdf") return <FileTextIcon />;
+    if (file.type.startsWith("video/")) return <FilmIcon />;
+    return null;
+  }}
+/>
+```
+
+Use this recipe when one queue mixes many file types. If your queue is documents-only, the [Patterns page](/docs/display/patterns#documents-only-queue-no-thumbnails) shows the lighter option: omit `FileCardPreview` entirely.
+
+### Extra actions
+
+`FileCardActions` accepts children, rendered after the built-in retry/remove buttons — useful for a "view file" link or "copy URL" button once a file has uploaded successfully.
+
+<DemoWithCode src="components/examples/file-card/layouts/file-card-extra-actions-demo.tsx">
+  <FileCardExtraActionsDemo />
+</DemoWithCode>
+
+```tsx
+<FileCardActions>
+  {status.status === "success" && (
+    <Button size="icon" variant="ghost" aria-label="Copy link" onClick={() => copyToClipboard(status.result)}>
+      <LinkIcon className="h-4 w-4" />
+    </Button>
+  )}
+</FileCardActions>
+```
+
+### Standalone action buttons
+
+If you need total control over the action layout, use `FileCardRetryButton` and `FileCardRemoveButton` directly anywhere inside `FileCard`. They read `onRetry` and `onRemove` from context and accept the same props as Shelf UI's `Button`.
+
+<DemoWithCode src="components/examples/file-card/layouts/file-card-standalone-actions-demo.tsx">
+  <FileCardStandaloneActionsDemo />
+</DemoWithCode>
+
+```tsx
+<FileCard fileStatus={status} onRemove={...} onRetry={...} canRetry={...}>
+  <div className="flex w-full items-center gap-3">
+    <FileCardInfo />
+    <div className="ml-auto flex shrink-0 items-center gap-1">
+      {status.status === "error" && <FileCardRetryButton size="icon-sm" />}
+      <FileCardRemoveButton size="icon-sm" />
+    </div>
+  </div>
+</FileCard>
+```
+
+## API Reference
+
+### `FileCard`
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `fileStatus` | `FileStatus` | Yes | A single entry from `dropzone.fileStatuses`. |
+| `onRemove` | `() => void` | No | Called when the remove button is clicked. Omit to hide the remove action entirely. |
+| `onRetry` | `() => void` | No | Called when the retry button is clicked. Only shown when `status === "error"` and `canRetry` is `true`. |
+| `canRetry` | `boolean` | No | Pass `dropzone.canRetry(status.id)`. Controls whether the retry button renders. |
+
+### `FileCardPreview`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `showImageThumbnail` | `boolean` | `false` | Render an `<img>` thumbnail for image files instead of the default status icon. Object URL lifecycle is managed automatically. |
+| `renderPreview` | `(file: File, status: UploadStatus) => ReactNode` | — | Full control over the preview content. Return `null`/`undefined` to use the built-in fallback for that file. |
+
+### `FileCardInfo`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `maxNameLength` | `number` | `28` | Characters before the filename is truncated with an ellipsis (extension preserved). |
+
+Shows the formatted file size by default, or the error message when `status === "error"`.
+
+### `FileCardProgress`
+
+No props beyond standard `div` attributes. Reads `status` from context — renders an indeterminate animated bar while `"pending"`, a filled bar on `"success"`, and a destructive-colored bar on `"error"`.
+
+### `FileCardFileName`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `maxLength` | `number` | `28` | Characters before the filename is truncated with an ellipsis (extension preserved). |
+
+### `FileCardFileSize`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| — | — | — | Standalone formatted file size text. No props beyond standard `span` attributes. |
+
+### `FileCardStatusText`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| — | — | — | Inline status text ("Uploading...", "Completed", or the error message). No props beyond standard `span` attributes. |
+
+### `FileCardTypeIcon` / `FileCardStatusIcon`
+
+| Component | Description |
+|-----------|-------------|
+| `FileCardTypeIcon` | Standalone file type icon (PDF, Video, Image, Archive, etc) based on the file type. |
+| `FileCardStatusIcon` | Standalone status icon (Loader, Check, Alert) based on the upload status. |
+
+### `FileCardCopyButton` / `FileCardDownloadButton`
+
+| Component | Description |
+|-----------|-------------|
+| `FileCardCopyButton` | Copies the URL to the clipboard. Automatically hides if `status.result` is empty. |
+| `FileCardDownloadButton` | Provides a direct download link. Automatically hides if `status.result` is empty. |
+
+### `FileCardActions`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `hideRetry` | `boolean` | `false` | Hide the retry button even when the file is retryable. |
+| `hideRemove` | `boolean` | `false` | Hide the remove button. |
+| `children` | `ReactNode` | — | Extra actions rendered after retry/remove. |
+
+### `FileCardRetryButton` / `FileCardRemoveButton`
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `...props` | `ButtonProps` | — | Standalone action buttons for custom layouts. Both accept the same props as the Shelf UI `Button` component. |
+
+### Utilities
+
+| Export | Description |
+|--------|-------------|
+| `useFileCardContext` | Reads the current FileCard context for custom subcomponents. |
+| `useFileObjectUrl` | Creates and revokes an object URL for a `File`; useful for custom previews outside `FileCardPreview`. |
+
+## Accessibility
+
+- Retry and remove buttons have `aria-label`s ("Retry upload", "Remove file") since they're icon-only.
+- `FileCardProgress` uses `role="progressbar"` with `aria-valuetext` set to `"indeterminate"`, `"100%"`, or `"error"` depending on status.
+- Error messages in `FileCardInfo` are plain text, so they're picked up by the same ARIA live region wiring as `DropzoneMessage` when both are on the page.
+
+## Performance
+
+- **Object URLs are handled internally.** `FileCardPreview` uses `useFileObjectUrl` to create the URL via `useEffect` and revoke it automatically on unmount or whenever the `file` reference changes. You don't need to call `URL.createObjectURL` or `URL.revokeObjectURL` yourself for `showImageThumbnail`.
+- **The URL is only created when it's actually needed** — if `showImageThumbnail` is off, or the file isn't an image, or `renderPreview` returns custom content, no object URL is created at all.
+- **`FileCardInfo`'s derived strings are memoized** against `file.name`/`file.size`, so re-renders triggered by unrelated state (e.g. a sibling row's status changing) don't re-run the truncation or byte-formatting logic.
+- **Context memoization has a limit.** `FileCard`'s context value is wrapped in `useMemo`, but that only prevents re-renders if `onRemove`/`onRetry` are stable references. If you pass `() => dropzone.onRemove(status.id)` inline inside a `.map()`, that's a new function every render. For small queues this is invisible; for large or frequently-updating queues, wrap the dropzone's callbacks once with `useCallback` (or curry an id-bound function with `useMemo`) in the parent component.
+- **Large lists** — if you're rendering hundreds of files, consider a virtualization library (e.g. `react-window`) around the `.map()`, the same guidance as in the Dropzone docs.

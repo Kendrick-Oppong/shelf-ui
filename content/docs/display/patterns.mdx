@@ -1,0 +1,85 @@
+---
+title: Patterns
+description: Common upload UI compositions built entirely from Dropzone and FileCard — no extra components required.
+icon: LayoutTemplate
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { DemoWithCode } from "@/components/docs/demo-with-code";
+import { DropzoneMultipleFilesDemo } from "@/components/examples/dropzone/advanced/dropzone-multiple-files-demo";
+import { DropzoneAvatarDemo } from "@/components/examples/dropzone/layouts/dropzone-avatar-demo";
+import { DropzoneGridDemo } from "@/components/examples/dropzone/layouts/dropzone-grid-demo";
+import { TriggerOnlyDemo } from "@/components/examples/patterns/trigger-only-demo";
+import { EmptyStateDemo } from "@/components/examples/patterns/empty-state-demo";
+import { DocumentsOnlyQueueDemo } from "@/components/examples/patterns/documents-only-queue-demo";
+
+<Callout type="info">
+  This page is recipes, not components. Everything below is built from [`Dropzone`](/docs/uploads/dropzone) and [`FileCard`](/docs/display/file-card) — nothing new to install.
+</Callout>
+
+## Trigger-only (no drag-and-drop surface)
+
+`DropzoneTrigger` already renders the hidden `<input type="file">` and owns the click handling, so it doesn't need to live inside a `DropZoneArea`. Skip the drop target entirely for a plain "Choose file" button, useful in compact forms or table cells where a large drag area doesn't fit.
+
+<DemoWithCode src="components/examples/patterns/trigger-only-demo.tsx">
+  <TriggerOnlyDemo />
+</DemoWithCode>
+
+This is the closest thing to a standalone "file input" component in Shelf UI — rather than a separate primitive, it's `DropzoneTrigger` used on its own.
+
+## Avatar / single-file replace
+
+Use `maxFiles: 1` plus `shiftOnMaxFiles: true` when a new file should replace the old one automatically. The trigger can render the live preview, so the upload control and the current value are the same element.
+
+<DemoWithCode src="components/examples/dropzone/layouts/dropzone-avatar-demo.tsx">
+  <DropzoneAvatarDemo />
+</DemoWithCode>
+
+## Empty and error states
+
+`fileStatuses` is just an array — when it's empty, nothing renders by default. Most upload UIs benefit from an explicit empty state instead of a blank gap, and from making `isInvalid`/`rootError` visible at a glance rather than relying solely on `DropzoneMessage` text.
+
+<DemoWithCode src="components/examples/patterns/empty-state-demo.tsx">
+  <EmptyStateDemo />
+</DemoWithCode>
+
+<Callout type="info">
+  `DropzoneMessage` already renders `rootError` automatically — the empty-state block above is additive, not a replacement. Use it when you want the queue area itself to communicate state, not just the drop zone.
+</Callout>
+
+## Documents-only queue (no thumbnails)
+
+When every file is the same general type (PDFs, contracts, resumes), thumbnails and progress bars can add visual noise without adding information. Compose `FileCard` with only `FileCardInfo` and `FileCardActions` for a denser list.
+
+<DemoWithCode src="components/examples/patterns/documents-only-queue-demo.tsx">
+  <DocumentsOnlyQueueDemo />
+</DemoWithCode>
+
+## Batch upload queue
+
+Use this when the user expects to upload several independent files, see partial progress, clear the queue, and retry only failed items.
+
+<DemoWithCode src="components/examples/dropzone/advanced/dropzone-multiple-files-demo.tsx">
+  <DropzoneMultipleFilesDemo />
+</DemoWithCode>
+
+## Image gallery
+
+For image-heavy workflows, skip row-based cards and show a grid where thumbnails are the primary information. This pattern keeps object URLs stable and revokes them when files are removed.
+
+<DemoWithCode src="components/examples/dropzone/layouts/dropzone-grid-demo.tsx">
+  <DropzoneGridDemo />
+</DemoWithCode>
+
+## Choosing a pattern
+
+A quick way to decide which composition fits:
+
+- **Need drag-and-drop and multiple files** — use the default `Dropzone` + `DropZoneArea` composition from the [Usage](/docs/uploads/dropzone#usage) example.
+- **Need a single file, no drag-and-drop, fits in a tight space** — Trigger-only, above.
+- **Need exactly one file that replaces itself (avatar, logo, cover image)** — Avatar pattern, above.
+- **Need a gallery of images** — Image gallery, above.
+- **Need a document checklist with no visual fluff** — Documents-only queue, above.
+- **Need retry and clear controls for a batch** — Batch upload queue, above.
+
+None of these require new component code — they're all `useDropzone` configuration plus a choice of which `FileCard` subcomponents to render.

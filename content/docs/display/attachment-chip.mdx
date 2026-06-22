@@ -1,0 +1,33 @@
+---
+title: AttachmentChip
+description: A compact inline pill for displaying a file attachment with an icon, filename, and optional remove button.
+icon: Paperclip
+badge: Soon
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Callout type="warn">
+  This component is coming soon.
+</Callout>
+
+`AttachmentChip` is a small, static inline pill for displaying a file that has already been attached or uploaded — not for showing upload progress. Think of the attachment row at the bottom of a Gmail message, or a chip in a comment box showing a selected file.
+
+Unlike `FileCard`, `AttachmentChip` has no upload state, no progress bar, and no retry action. It is purely a display component.
+
+## Planned API
+
+```tsx
+<AttachmentChip
+  name="report-q3.pdf"
+  size={204800}
+  onRemove={() => handleRemove(id)}
+/>
+```
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `name` | `string` | The filename to display. |
+| `size` | `number` | File size in bytes — formatted automatically. |
+| `onRemove` | `() => void` | Called when the ✕ button is clicked. Omit to hide the remove button. |
+| `icon` | `ReactNode` | Override the auto-detected file type icon. |
