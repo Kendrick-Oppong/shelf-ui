@@ -2,6 +2,7 @@
 title: Supabase Storage
 description: Use Shelf UI components with Supabase Storage for seamless file uploads.
 icon: Database
+badge: Soon
 ---
 
 import { Badge } from "@/components/ui/badge"
@@ -60,21 +61,21 @@ export function SupabaseUpload() {
 
   const handleUpload = async (files: File[]) => {
     setUploading(true)
-    
+
     for (const file of files) {
       const filePath = `${Date.now()}-${file.name}`
-      
+
       const { data, error } = await supabase.storage
         .from('uploads')
         .upload(filePath, file)
-      
+
       if (error) {
         console.error('Upload error:', error)
       } else {
         console.log('Uploaded:', data.path)
       }
     }
-    
+
     setUploading(false)
   }
 

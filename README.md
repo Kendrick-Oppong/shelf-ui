@@ -13,7 +13,7 @@ Built on React 19, Tailwind CSS v4, and your choice of Radix UI or Base UI.
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8.svg)](https://tailwindcss.com/)
 
-[Documentation](https://shelf-ui.vercel.app/docs) · [Components](https://shelf-ui.vercel.app/docs/components) · [Changelog](https://shelf-ui.vercel.app/changelog)
+[Documentation](https://shelf-ui.vercel.app/docs) · [Components](https://shelf-ui.vercel.app/docs/uploads/dropzone) · [Changelog](https://shelf-ui.vercel.app/changelog)
 
 </div>
 
@@ -21,7 +21,7 @@ Built on React 19, Tailwind CSS v4, and your choice of Radix UI or Base UI.
 
 ## What is Shelf UI?
 
-Shelf UI is an open-source component library built on the [shadcn registry](https://ui.shadcn.com/docs/registry) model. It covers the entire file experience — from the dropzone to the file tree — with first-class integrations for Supabase Storage, AWS S3, and Cloudinary.
+Shelf UI is an open-source component library built on the [shadcn registry](https://ui.shadcn.com/docs/registry) model. It covers the entire file experience — from the drag-and-drop zone to the file tree — with first-class integrations for Supabase Storage, AWS S3, and Cloudinary.
 
 Think of it as **shadcn/ui, purpose-built for file UIs.**
 
@@ -33,34 +33,34 @@ Think of it as **shadcn/ui, purpose-built for file UIs.**
 
 ## Components
 
-| Component | Category |
+### Upload
+
+| Component | Status | Description |
+| --- | --- | --- |
+| `Dropzone` | ✅ Available | Drag-and-drop zone with upload state, validation, and retry. Ships with layout examples for avatar, grid, trigger-only, and batch queue patterns. |
+
+### Preview & Display
+
+| Component | Status | Description |
+| --- | --- | --- |
+| `FileCard` | ✅ Available | Composable upload-status row with preview, info, progress, and actions. |
+| `Patterns` | ✅ Available | Composition recipes built from Dropzone and FileCard — no new components needed. |
+| `AttachmentChip` | 🔜 Soon | Compact inline pill for displaying a file attachment (chat/email style). |
+
+### Management
+
+| Component | Status | Description |
+| --- | --- | --- |
+| `FileTree` | 🔜 Soon | Recursive folder/file browser with expand/collapse and keyboard navigation. |
+| `FileBreadcrumb` | 🔜 Soon | Path navigation bar for folder hierarchies. |
+
+### Storage Adapters
+
+| Adapter | Status |
 | --- | --- |
-| `Dropzone` | Upload |
-| `FileInput` | Upload |
-| `AvatarUpload` | Upload |
-| `CoverUpload` | Upload |
-| `GalleryUpload` | Upload |
-| `AttachmentButton` | Upload |
-| `FileCard` | Preview & Display |
-| `FileGrid` | Preview & Display |
-| `FileList` | Preview & Display |
-| `FileTable` | Preview & Display |
-| `AttachmentChip` | Preview & Display |
-| `FileIcon` | Preview & Display |
-| `ImagePreview` | Preview & Display |
-| `PDFPreview` | Preview & Display |
-| `VideoPreview` | Preview & Display |
-| `FileTree` | Management |
-| `FileBreadcrumb` | Management |
-| `FolderCard` | Management |
-| `FileContextMenu` | Management |
-| `BulkSelectBar` | Management |
-| `FileSearch` | Management |
-| `FileEmptyState` | Management |
-| `UploadProgress` | Feedback |
-| `UploadQueue` | Feedback |
-| `UploadToast` | Feedback |
-| `StorageQuota` | Feedback |
+| Supabase Storage | ✅ Available |
+| AWS S3 | ✅ Available |
+| Cloudinary | ✅ Available |
 
 ## Getting Started
 
@@ -102,15 +102,48 @@ bunx shadcn@latest add @shelf-ui/dropzone
 ### Usage
 
 ```tsx
-import { Dropzone } from "@/components/shelf-ui/dropzone"
+import {
+  Dropzone,
+  DropZoneArea,
+  DropzoneTrigger,
+  useDropzone,
+} from "@/components/shelf-ui/dropzone"
+import { FileCard, FileCardInfo, FileCardActions, FileCardProgress } from "@/components/shelf-ui/file-card"
 
-export default function Page() {
+export default function UploadPage() {
+  const dropzone = useDropzone({
+    onDropFile: async (file) => {
+      // upload to your storage provider
+      const url = await uploadToS3(file)
+      return { status: "success", result: url }
+    },
+    validation: { maxFiles: 10, maxSize: 10 * 1024 * 1024 },
+  })
+
   return (
-    <Dropzone
-      onDrop={(files) => console.log(files)}
-      accept={["image/*", ".pdf"]}
-      maxSize={10 * 1024 * 1024}
-    />
+    <div>
+      <Dropzone {...dropzone}>
+        <DropZoneArea>
+          <DropzoneTrigger>Drop files here or click to browse</DropzoneTrigger>
+        </DropZoneArea>
+      </Dropzone>
+
+      {dropzone.fileStatuses.map((status) => (
+        <FileCard
+          key={status.id}
+          fileStatus={status}
+          onRemove={() => dropzone.onRemove(status.id)}
+          onRetry={() => dropzone.onRetry(status.id)}
+          canRetry={dropzone.canRetry(status.id)}
+        >
+          <div className="flex w-full items-center gap-3">
+            <FileCardInfo />
+            <FileCardActions />
+          </div>
+          <FileCardProgress />
+        </FileCard>
+      ))}
+    </div>
   )
 }
 ```
@@ -119,29 +152,13 @@ See [the docs](https://shelf-ui.vercel.app/docs) for all components, props, and 
 
 ## Storage Adapters
 
-Shelf UI includes first-class adapters for three storage providers:
+Shelf UI includes adapter guides for three storage providers:
 
-```tsx
-import { useStorageProvider } from "@/hooks/use-storage-provider"
+- **[Supabase Storage](https://shelf-ui.vercel.app/docs/adapters/supabase)** — `supabase.storage.from(bucket).upload()`
+- **[AWS S3](https://shelf-ui.vercel.app/docs/adapters/aws-s3)** — presigned URL upload via `fetch`
+- **[Cloudinary](https://shelf-ui.vercel.app/docs/adapters/cloudinary)** — unsigned upload preset
 
-// Supabase Storage
-const adapter = useStorageProvider("supabase", {
-  client: supabase,
-  bucket: "uploads",
-})
-
-// AWS S3
-const adapter = useStorageProvider("s3", {
-  region: "us-east-1",
-  bucket: "my-bucket",
-})
-
-// Cloudinary
-const adapter = useStorageProvider("cloudinary", {
-  cloudName: "my-cloud",
-  uploadPreset: "my-preset",
-})
-```
+Each adapter guide shows the exact `onDropFile` handler to pass to `useDropzone`.
 
 ## Contributing
 

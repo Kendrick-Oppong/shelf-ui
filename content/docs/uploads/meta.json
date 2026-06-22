@@ -1,4 +1,4 @@
 {
   "title": "Upload",
-  "pages": ["dropzone", "file-card", "patterns"]
+  "pages": ["dropzone"]
 }

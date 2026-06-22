@@ -17,12 +17,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-async function fakeUpload(file: File) {
+async function fakeUpload(_file: File) {
   await new Promise((resolve) => setTimeout(resolve, 800));
-  return { status: "success" as const, result: file.name };
+  return { status: "success" as const, result: undefined };
 }
 
-function AttachmentPreview({ file }: { file: File }) {
+function AttachmentPreview({ file }: Readonly<{ file: File }>) {
   const objectUrl = useFileObjectUrl(
     file.type.startsWith("image/") ? file : undefined
   );
@@ -56,7 +56,7 @@ export function TriggerOnlyDemo() {
   return (
     <div className="w-full max-w-md space-y-3">
       {/* Simulated chat / form input surface with enhanced styling */}
-      <div className="overflow-hidden rounded-xl border bg-gradient-to-br from-background to-muted/20 shadow-lg transition-shadow duration-200 hover:shadow-xl">
+      <div className="overflow-hidden rounded-xl border bg-linear-to-br from-background to-muted/20 shadow-lg transition-shadow duration-200 hover:shadow-xl">
         {/* Input area */}
         <div className="min-h-24 p-4">
           <p className="select-none text-muted-foreground/50 text-sm">
@@ -136,9 +136,11 @@ export function TriggerOnlyDemo() {
                   animation: `fadeIn 0.3s ease-out ${index * 0.08}s both`,
                 }}
               >
-                <FileCardPreview showImageThumbnail />
-                <FileCardInfo maxNameLength={28} />
-                <FileCardActions hideRetry />
+                <div className="flex w-full items-center gap-3">
+                  <FileCardPreview showImageThumbnail />
+                  <FileCardInfo maxNameLength={28} />
+                  <FileCardActions hideRetry />
+                </div>
               </FileCard>
             ))}
           </div>

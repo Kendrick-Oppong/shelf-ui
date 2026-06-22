@@ -22,7 +22,10 @@ export const source = loader({
             // add badge to tree
             if (typeof badgeText === "string") {
               node.name = (
-                <span className="flex w-full items-center justify-between gap-2">
+                <span
+                  className="flex w-full items-center justify-between gap-2"
+                  key="name"
+                >
                   <span>{node.name}</span>
                   <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 font-semibold text-[10px] text-primary uppercase tracking-wider">
                     {badgeText}

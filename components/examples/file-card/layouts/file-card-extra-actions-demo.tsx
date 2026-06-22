@@ -15,16 +15,22 @@ import { Button } from "@/components/ui/button";
 function useUploadedFiles(): FileStatus<string>[] {
   const [statuses] = useState<FileStatus<string>[]>(() => [
     {
-      file: new File([""], "signed-contract.pdf", {
-        type: "application/pdf",
-      }),
+      file: new File(
+        [new ArrayBuffer(1024 * 1024 * 2.1)],
+        "signed-contract.pdf",
+        {
+          type: "application/pdf",
+        }
+      ),
       id: "signed-contract",
       result: "https://example.com/files/signed-contract.pdf",
       status: "success",
       tries: 1,
     },
     {
-      file: new File([""], "invoice-1042.pdf", { type: "application/pdf" }),
+      file: new File([new ArrayBuffer(1024 * 340)], "invoice-1042.pdf", {
+        type: "application/pdf",
+      }),
       id: "invoice",
       result: "https://example.com/files/invoice-1042.pdf",
       status: "success",
@@ -48,36 +54,34 @@ export function FileCardExtraActionsDemo() {
 
       <div className="flex flex-col gap-2">
         {fileStatuses.map((status) => (
-          <FileCard
-            fileStatus={status}
-            key={status.id}
-            onRemove={() => undefined}
-          >
-            <FileCardPreview />
-            <FileCardInfo />
-            <FileCardActions hideRetry>
-              <Button
-                aria-label={`Copy link for ${status.file.name}`}
-                onClick={() => setCopiedId(status.id)}
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-              >
-                {copiedId === status.id ? (
-                  <Check className="size-3.5" />
-                ) : (
-                  <Clipboard className="size-3.5" />
-                )}
-              </Button>
-              <Button
-                aria-label={`Open ${status.file.name}`}
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-              >
-                <ExternalLink className="size-3.5" />
-              </Button>
-            </FileCardActions>
+          <FileCard fileStatus={status} key={status.id} onRemove={() => {}}>
+            <div className="flex w-full items-center gap-3">
+              <FileCardPreview />
+              <FileCardInfo />
+              <FileCardActions hideRetry>
+                <Button
+                  aria-label={`Copy link for ${status.file.name}`}
+                  onClick={() => setCopiedId(status.id)}
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  {copiedId === status.id ? (
+                    <Check className="size-3.5" />
+                  ) : (
+                    <Clipboard className="size-3.5" />
+                  )}
+                </Button>
+                <Button
+                  aria-label={`Open ${status.file.name}`}
+                  size="icon-sm"
+                  type="button"
+                  variant="ghost"
+                >
+                  <ExternalLink className="size-3.5" />
+                </Button>
+              </FileCardActions>
+            </div>
           </FileCard>
         ))}
       </div>

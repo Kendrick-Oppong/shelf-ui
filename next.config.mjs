@@ -19,8 +19,13 @@ const config = {
         permanent: true,
       },
       {
-        source: "/components",
+        source: "/docs/components",
         destination: "/docs/uploads/dropzone",
+        permanent: true,
+      },
+      {
+        source: "/docs/adapters",
+        destination: "/docs/adapters/supabase",
         permanent: true,
       },
     ];

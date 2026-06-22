@@ -1,0 +1,33 @@
+---
+title: FileBreadcrumb
+description: A path navigation bar that renders a clickable breadcrumb trail for folder hierarchies.
+icon: ChevronRight
+badge: Soon
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Callout type="warn">
+  This component is coming soon.
+</Callout>
+
+`FileBreadcrumb` renders a clickable path trail for navigating folder hierarchies — typically paired with `FileTree` or a file manager layout.
+
+## Planned API
+
+```tsx
+<FileBreadcrumb
+  path={[
+    { id: "root", name: "My Files" },
+    { id: "projects", name: "Projects" },
+    { id: "shelf-ui", name: "shelf-ui" },
+  ]}
+  onNavigate={(segment) => setCurrentFolder(segment.id)}
+/>
+```
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `path` | `BreadcrumbSegment[]` | Ordered array of path segments — each has `id` and `name`. The last item is the current location (non-clickable). |
+| `onNavigate` | `(segment: BreadcrumbSegment) => void` | Called when a segment is clicked. |
+| `separator` | `ReactNode` | Custom separator element. Defaults to `/`. |
