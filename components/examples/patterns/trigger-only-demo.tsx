@@ -17,9 +17,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-async function fakeUpload(file: File) {
+async function fakeUpload(_file: File) {
   await new Promise((resolve) => setTimeout(resolve, 800));
-  return { status: "success" as const, result: file.name };
+  return { status: "success" as const };
 }
 
 function AttachmentPreview({ file }: { file: File }) {
@@ -136,9 +136,11 @@ export function TriggerOnlyDemo() {
                   animation: `fadeIn 0.3s ease-out ${index * 0.08}s both`,
                 }}
               >
-                <FileCardPreview showImageThumbnail />
-                <FileCardInfo maxNameLength={28} />
-                <FileCardActions hideRetry />
+                <div className="flex w-full items-center gap-3">
+                  <FileCardPreview showImageThumbnail />
+                  <FileCardInfo maxNameLength={28} />
+                  <FileCardActions hideRetry />
+                </div>
               </FileCard>
             ))}
           </div>
