@@ -67,6 +67,7 @@ export default function RootLayout({
   return (
     <html
       className={`${fontSans.variable} ${courier.variable} h-full antialiased`}
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >
@@ -81,7 +82,7 @@ export default function RootLayout({
         </ThemeProvider>
 
         <script
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: dangerouslySetInnerHTML is fine here
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: the content is produced from application-controlled data and serialized with JSON.stringify.
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(JSON_LD_SCHEMA),
           }}

@@ -7,7 +7,7 @@ export default function NotFound() {
       {/* Radial glow — mirrors hero */}
       <div
         aria-hidden
-        className="pointer-events-none absolute top-1/2 left-1/2 h-[500px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse,color-mix(in_srgb,var(--color-primary)_8%,transparent)_0%,transparent_65%)]"
+        className="pointer-events-none absolute top-1/2 left-1/2 h-125 w-225 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse,color-mix(in_srgb,var(--color-primary)_8%,transparent)_0%,transparent_65%)]"
       />
 
       {/* Subtle dot grid */}
