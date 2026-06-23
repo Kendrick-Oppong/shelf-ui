@@ -366,6 +366,9 @@
     @apply mx-auto;
   }
 
+  #nd-notebook-layout {
+    @apply border-l!;
+  }
   /* remove margin inline when side bar is not collapsed, this fixes mdx page code block shifting behaviour */
   #nd-notebook-layout[data-sidebar-collapsed="false"] #nd-page {
     @apply mx-0!;
