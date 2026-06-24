@@ -59,7 +59,11 @@ Add the Shelf UI registry to your `components.json`:
 
 ### Option 1: shadcn CLI (recommended)
 
-Shelf UI is in the shadcn directory. No extra config needed — add components directly:
+<Callout type="warn">
+  **Unknown registry "@shelf-ui"** error? Make sure you completed the "Add registry" step above by adding `"@shelf-ui": "https://shelf-ui.vercel.app/r/{name}.json"` to your `components.json` file first!
+</Callout>
+
+Once your registry is configured, you can add components using the `@shelf-ui` namespace:
 
 <Tabs groupId="pkg" items={["npm", "pnpm", "yarn", "bun"]} persist>
   <Tab value="npm">
