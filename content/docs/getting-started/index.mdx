@@ -8,7 +8,7 @@ import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { Card, Cards } from "fumadocs-ui/components/card";
 
-Shelf UI is an open-source component library for building file-related interfaces in React. It gives you composable, copy-paste components designed for the complete file experience — upload, preview, manage, and navigate — built on React 19, Tailwind CSS v4, and your choice of Radix UI or Base UI.
+Shelf UI is an open-source component library for building file-related interfaces in React. It gives you composable, copy-paste components designed for the complete file experience — upload, preview, manage, and navigate — built on React 19, Tailwind CSS v4, and Radix UI.
 
 Think of it as **shadcn/ui, purpose-built for file UIs**.
 
@@ -21,9 +21,7 @@ Think of it as **shadcn/ui, purpose-built for file UIs**.
   <Card title="Copy-paste ownership">
     Components are not installed as a dependency. You copy them into your project and own them entirely. Edit, extend, delete — no abstraction in the way.
   </Card>
-  <Card title="Dual primitive support">
-    Pick Radix UI or Base UI at init. The component API is identical — only the internals differ. Switch anytime, zero migration cost.
-  </Card>
+
   <Card title="Storage adapters built in">
     First-class Supabase Storage, AWS S3, and Cloudinary support. Drop in your config and uploads just work.
   </Card>
@@ -66,38 +64,27 @@ This copies the component source into your `components/shelf-ui` directory. Cust
 
 ## Components
 
-| Component | Category | Description |
-| --- | --- | --- |
-| [Dropzone](/docs/components/dropzone) | Upload | Drag and drop file upload area with accept filtering and validation |
-| [FileInput](/docs/components/file-input) | Upload | Button-triggered minimal file input |
-| [AvatarUpload](/docs/components/avatar-upload) | Upload | Circular image crop and upload |
-| [GalleryUpload](/docs/components/gallery-upload) | Upload | Multi-image upload with drag-to-reorder |
-| [FileCard](/docs/components/file-card) | Display | Smart preview card per file type — image, PDF, video, archive |
-| [FileGrid](/docs/components/file-grid) | Display | Grid layout with thumbnails and hover actions |
-| [FileList](/docs/components/file-list) | Display | Minimal stacked list with name, size, date, actions |
-| [FileTable](/docs/components/file-table) | Display | Full tabular view with sortable columns |
-| [AttachmentChip](/docs/components/attachment-chip) | Display | Inline pill with icon, filename, and remove (email/chat style) |
-| [FileTree](/docs/components/file-tree) | Management | Recursive folder/file browser with expand/collapse |
-| [FileBreadcrumb](/docs/components/file-breadcrumb) | Management | Path navigation bar |
-| [FileSearch](/docs/components/file-search) | Management | Searchable and filterable file list |
-| [UploadProgress](/docs/components/upload-progress) | Feedback | Per-file progress bar with cancel action |
-| [UploadQueue](/docs/components/upload-queue) | Feedback | Queue UI — pending, uploading, done, failed states |
-| [StorageQuota](/docs/components/storage-quota) | Feedback | Used/total bar with breakdown by file type |
+| Component | Category | Description | Status |
+| --- | --- | --- | --- |
+| [Dropzone](/docs/uploads/dropzone) | Upload | Drag and drop file upload area with accept filtering and validation | Available |
+| [FileCard](/docs/display/file-card) | Display | Smart preview card per file type — image, PDF, video, archive | Available |
+| [AttachmentChip](/docs/display/attachment-chip) | Display | Inline pill with icon, filename, and remove | Soon |
+| [FileTree](/docs/management/file-tree) | Management | Recursive folder/file browser with expand/collapse | Soon |
+| [FileBreadcrumb](/docs/management/file-breadcrumb) | Management | Path navigation bar | Soon |
 
-More components are being actively developed. See the [roadmap](/docs/roadmap) or follow the repo for updates.
+*Note: For complex layouts like Avatar Uploads, Queues, and Grids, we use **Patterns** combining the core components. See the [Patterns guide](/docs/display/patterns) for examples.*
+
+More components are being actively developed. Follow the repo for updates.
 
 ## FAQ
 
 <Accordions type="single">
   <Accordion title="Do I need to install anything globally?">
     No global install required. Each component installs its own peer
-    dependencies (Radix UI or Base UI, Tailwind, Lucide) via the shadcn CLI.
+    dependencies (Radix UI, Tailwind, Lucide) via the shadcn CLI.
     Run one command per component.
   </Accordion>
-  <Accordion title="Which primitive should I use — Radix UI or Base UI?">
-    Both are fully supported. The component API is identical — only the
-    internals differ. See the [Primitives](/docs/getting-started/primitives) guide for help choosing. You can switch anytime with zero migration cost.
-  </Accordion>
+
   <Accordion title="Does this work with my existing shadcn setup?">
     Yes. Shelf UI is a separate registry that integrates with your existing
     `components.json`. Add the registry alias once and all Shelf UI
@@ -105,7 +92,7 @@ More components are being actively developed. See the [roadmap](/docs/roadmap) o
   </Accordion>
   <Accordion title="Can I use only some components?">
     Yes — that's the point. Install only what you need. Components are
-    independent; installing Dropzone doesn't pull in FileTree.
+    independent
   </Accordion>
   <Accordion title="Can I use Shelf UI without Next.js?">
     Yes. Shelf UI components work in any React 19+ project — Vite, Remix,
@@ -113,7 +100,7 @@ More components are being actively developed. See the [roadmap](/docs/roadmap) o
     your framework.
   </Accordion>
   <Accordion title="Are the components accessible?">
-    Yes. Components built on Radix UI or Base UI primitives are WAI-ARIA
+    Yes. Components built on Radix UI primitives are WAI-ARIA
     compliant out of the box. All interactive components support full
     keyboard navigation.
   </Accordion>
