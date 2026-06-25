@@ -243,7 +243,6 @@ function composeRefs<T>(...refs: Array<Ref<T> | undefined>) {
 // Main Hook
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useDropzone<TResult = unknown, TError = unknown>({
   onDropFile,
   validation = {},
