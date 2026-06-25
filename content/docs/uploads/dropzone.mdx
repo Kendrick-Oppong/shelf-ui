@@ -297,12 +297,12 @@ Dropzone (Provider)
 
 ### When to use `asChild` or `render`
 
-`asChild` (Radix UI) and the `render` prop (Base UI) exist for one specific situation: you need to **eliminate the wrapper `<div>` entirely** so that your element directly receives the drag handlers.
+`asChild` and the `render` prop exist for one specific situation: you need to **eliminate the wrapper `<div>` entirely** so that your element directly receives the drag handlers.
 
 If neither applies, stick with the default.
 
 <Callout type="info">
-  `asChild` and `render` are only available because Shelf UI supports both Radix UI and Base UI as primitive libraries. Use whichever matches the one you installed.
+  Both `asChild` and `render` are provided as conveniences for complex layouts. Use whichever pattern matches your project's style.
 </Callout>
 
 ## API Reference
@@ -362,7 +362,7 @@ interface FileStatus<TResult, TError> {
 | Component | Renders | Description |
 |-----------|---------|-------------|
 | `Dropzone` | — | Context provider. Spread the `useDropzone()` return value onto it. |
-| `DropZoneArea` | `div` | The drag target. Accepts `asChild` (Radix) and `render` prop (Base UI). |
+| `DropZoneArea` | `div` | The drag target. Accepts `asChild` or a `render` prop for element composition. |
 | `DropzoneTrigger` | `button` | Clickable trigger that renders the hidden file input and opens the picker. |
 | `DropzoneMessage` | `p` | Renders the root validation error. Returns `null` when there is no error. |
 | `DropzoneDescription` | `p` | Helper text — accepted formats, size limits, etc. |
