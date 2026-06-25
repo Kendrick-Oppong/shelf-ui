@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 "use client";
 
 import {
@@ -278,6 +279,9 @@ export function useDropzone<TResult = unknown, TError = unknown>({
   // Tracks in-flight uploads to prevent duplicate uploads for the same id.
   const uploadingRef = useRef<Set<string>>(new Set());
 
+  // Break the recursive dependency for scheduleRetry
+  const uploadFileRef = useRef<(id: string, file: File) => Promise<void>>(null);
+
   // Tracks whether the component is still mounted, so pending retry
   // timeouts can bail out instead of dispatching after teardown.
   const isMountedRef = useRef(true);
@@ -345,7 +349,8 @@ export function useDropzone<TResult = unknown, TError = unknown>({
             maxRetryCount,
             isMountedRef,
             pendingTimeoutsRef,
-            uploadFile
+            (retryId, retryFile) =>
+              uploadFileRef.current?.(retryId, retryFile) ?? Promise.resolve()
           );
         }
       } catch (err) {
@@ -365,7 +370,8 @@ export function useDropzone<TResult = unknown, TError = unknown>({
             maxRetryCount,
             isMountedRef,
             pendingTimeoutsRef,
-            uploadFile
+            (retryId, retryFile) =>
+              uploadFileRef.current?.(retryId, retryFile) ?? Promise.resolve()
           );
         }
       } finally {
@@ -382,6 +388,11 @@ export function useDropzone<TResult = unknown, TError = unknown>({
       dispatch,
     ]
   );
+
+  // Keep ref in sync so scheduleRetry can call it
+  useEffect(() => {
+    uploadFileRef.current = uploadFile;
+  }, [uploadFile]);
 
   const handleDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -525,7 +536,7 @@ export function Dropzone<TResult = unknown, TError = unknown>({
   ...hookReturn
 }: ReturnType<typeof useDropzone<TResult, TError>> & { children: ReactNode }) {
   return (
-    <DropzoneContext.Provider value={hookReturn as DropzoneContextValue}>
+    <DropzoneContext.Provider value={hookReturn}>
       {children}
     </DropzoneContext.Provider>
   );
@@ -535,10 +546,10 @@ Dropzone.displayName = "Dropzone";
 export function DropzoneProvider({
   children,
   value,
-}: {
+}: Readonly<{
   children: ReactNode;
   value: DropzoneContextValue;
-}) {
+}>) {
   return (
     <DropzoneContext.Provider value={value}>
       {children}
@@ -594,7 +605,7 @@ export function DropZoneArea({
   render,
   ref,
   ...props
-}: DropZoneAreaProps) {
+}: Readonly<DropZoneAreaProps>) {
   const { getRootProps, isDragActive, isInvalid } = useDropzoneContext();
   const rootProps = getRootProps({
     className: cn(
@@ -606,9 +617,11 @@ export function DropZoneArea({
     ...props,
   });
   const rootRef = (rootProps as { ref?: Ref<HTMLDivElement> }).ref;
+  // eslint-disable-next-line react-hooks/refs
+  const mergedRef = composeRefs(rootRef, ref);
   const areaProps = {
     ...rootProps,
-    ref: composeRefs(rootRef, ref),
+    ref: mergedRef,
   };
 
   // 1. Base UI render prop – function form
