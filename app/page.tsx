@@ -5,7 +5,6 @@ import { FeaturesBento } from "@/components/home/features-bento";
 import { FlowDiagram } from "@/components/home/flow-diagram";
 import { HeroSection } from "@/components/home/hero-section";
 import { PrimitivesSection } from "@/components/home/primitives-section";
-import { StatsSection } from "@/components/home/stats-section";
 import { Footer } from "@/components/shared/footer";
 import { Header } from "@/components/shared/header";
 
@@ -22,7 +21,6 @@ export default function HomePage() {
       <main>
         <HeroSection />
         <FlowDiagram />
-        <StatsSection />
         <FeaturesBento />
         <AdaptersSection />
         <PrimitivesSection />
