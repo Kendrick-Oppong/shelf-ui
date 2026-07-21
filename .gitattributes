@@ -1,0 +1,4 @@
+# Force LF line endings for source files that get embedded in registry JSON
+components/shelf-ui/*.tsx text eol=lf
+scripts/*.ts text eol=lf
+public/r/*.json text eol=lf
